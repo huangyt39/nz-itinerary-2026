@@ -1,0 +1,1772 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" as="image" href="assets/hero-pukaki-aoraki.jpg" fetchpriority="high">
+  <meta name="description" content="2026 新西兰南岛旅行计划：悉尼中转、但尼丁与奥塔哥半岛、皇后镇跳伞与冰川徒步、瓦纳卡、库克山、蒂卡波星空、凯库拉观鲸，墨尔本返程。">
+  <meta name="theme-color" content="#131619">
+  <title>新西兰南岛旅行计划 · 2026｜公开版</title>
+  <link rel="stylesheet" href="vendor/leaflet.css">
+  <style>
+    :root {
+      --ink: #17191c;
+      --muted: #62686f;
+      --line: #d9dde1;
+      --paper: #ffffff;
+      --surface: #f3f5f6;
+      --red: #a92727;
+      --teal: #17716e;
+      --green: #2d6a43;
+      --blue: #2f5e8d;
+      --gold: #b37917;
+      --max: 1180px;
+      --shadow: 0 8px 24px rgba(23, 25, 28, .09);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      line-height: 1.65;
+    }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    img { display: block; width: 100%; }
+    h1, h2, h3 { line-height: 1.22; letter-spacing: -.4px; }
+
+    /* ---------- topbar + tabs ---------- */
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 20;
+      height: 106px;
+      color: #fff;
+      background: rgba(19, 22, 25, .95);
+      backdrop-filter: saturate(140%) blur(8px);
+      border-bottom: 1px solid rgba(255, 255, 255, .18);
+    }
+    .topbar-inner {
+      width: min(calc(100% - 32px), var(--max));
+      height: 58px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .wordmark { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+    .wordmark b {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 3.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .wordmark span {
+      padding-left: 10px;
+      border-left: 1px solid rgba(255, 255, 255, .3);
+      color: rgba(255, 255, 255, .66);
+      font-size: 11px;
+      letter-spacing: 1.4px;
+      white-space: nowrap;
+    }
+    .topnav { display: flex; align-items: center; gap: 9px; }
+    .topnav button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 30px;
+      padding: 0 12px;
+      color: rgba(255, 255, 255, .84);
+      font: inherit;
+      font-size: 12px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background .2s ease, color .2s ease;
+    }
+    .topnav button:hover { color: #fff; background: rgba(255, 255, 255, .2); }
+    .topnav button svg { width: 13px; height: 13px; }
+
+    .workspace-tabs {
+      width: min(calc(100% - 32px), var(--max));
+      height: 48px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      border-top: 1px solid rgba(255, 255, 255, .13);
+    }
+    .workspace-tab {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 8px;
+      color: rgba(255, 255, 255, .62);
+      background: transparent;
+      border: 0;
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: .3px;
+      cursor: pointer;
+      transition: color .2s ease;
+    }
+    .workspace-tab svg { width: 14px; height: 14px; }
+    .workspace-tab:hover { color: rgba(255, 255, 255, .9); }
+    .workspace-tab.is-active { color: #fff; }
+    .workspace-tab.is-active::after {
+      content: "";
+      position: absolute;
+      inset: auto 14px -1px 14px;
+      height: 2px;
+      background: #f2bd50;
+    }
+    .workspace-tab i.tab-index {
+      font-size: 10px;
+      font-style: normal;
+      letter-spacing: 1px;
+      opacity: .6;
+    }
+
+    /* ---------- paginated workspace ---------- */
+    body { overflow: hidden; }
+    .workspace { position: fixed; inset: 106px 0 0 0; }
+    .panel {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: var(--paper);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .22s ease;
+      -webkit-overflow-scrolling: touch;
+    }
+    .panel.is-active { opacity: 1; visibility: visible; }
+    .panel-inner { width: min(calc(100% - 32px), var(--max)); margin: 0 auto; padding: 40px 0 58px; }
+    .panel-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      align-items: end;
+      gap: 26px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .panel-heading h2 { margin: 8px 0 0; font-size: 30px; font-weight: 900; }
+    .panel-heading .lead { margin: 0; color: var(--muted); font-size: 13.5px; }
+    .section-kicker {
+      margin: 0;
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+    }
+
+    /* ---------- hero ---------- */
+    .hero {
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      align-items: flex-end;
+      color: #fff;
+      background: #14181b;
+      overflow: hidden;
+    }
+    .hero-media { position: absolute; inset: 0; }
+    .hero-media img { width: 100%; height: 100%; object-fit: cover; opacity: .82; }
+    .hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(12, 15, 18, .58) 0%, rgba(12, 15, 18, .18) 38%, rgba(12, 15, 18, .82) 100%);
+    }
+    .hero-body { position: relative; width: min(calc(100% - 32px), var(--max)); margin: 0 auto; padding: 74px 0 40px; }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255, 255, 255, .3);
+    }
+    .hero h1 {
+      max-width: 15em;
+      margin: 0;
+      font-size: clamp(31px, 5.1vw, 58px);
+      font-weight: 900;
+      letter-spacing: -1.1px;
+    }
+    .hero-copy { max-width: 40em; margin: 16px 0 0; color: rgba(255, 255, 255, .84); font-size: 14.5px; }
+    .hero-meta {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: rgba(255, 255, 255, .24);
+      border: 1px solid rgba(255, 255, 255, .24);
+    }
+    .hero-meta div { padding: 13px 15px; background: rgba(14, 17, 20, .58); }
+    .hero-meta strong { display: block; font-size: 15px; font-weight: 850; }
+    .hero-meta span { color: rgba(255, 255, 255, .64); font-size: 11px; letter-spacing: .6px; }
+    .hero-credit {
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      color: rgba(255, 255, 255, .5);
+      font-size: 10px;
+    }
+
+    /* ---------- overview / map ---------- */
+    .overview { padding: 46px 0 8px; }
+    .map-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .map-head h2 { margin: 6px 0 0; font-size: 26px; font-weight: 900; }
+    .map-legend { display: flex; flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 12px; }
+    .map-legend span { display: inline-flex; align-items: center; gap: 7px; }
+    .legend-line { display: block; width: 26px; height: 0; border-top-width: 3px; border-top-style: solid; }
+    .legend-line.flight { border-top-color: var(--blue); border-top-style: dashed; }
+    .legend-line.road { border-top-color: var(--gold); }
+    .legend-line.walk { border-top-color: var(--green); }
+    .legend-line.boat { border-top-color: var(--teal); border-top-style: dotted; }
+
+    .route-map-shell {
+      margin-top: 20px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: var(--surface);
+    }
+    #routeMap { height: 500px; }
+    .leaflet-container { font: inherit; background: #e8ecef; }
+    .leaflet-control-attribution { font-size: 10px; }
+    .route-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 850;
+      background: var(--red);
+      border: 2px solid #fff;
+      border-radius: 999px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, .32);
+    }
+    .route-marker.site {
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border: 3px solid var(--teal);
+    }
+    .route-tooltip {
+      padding: 3px 6px;
+      color: #202326;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+    .route-tooltip::before { display: none; }
+    .leaflet-popup-content { margin: 12px 14px; font-size: 12.5px; }
+    .leaflet-popup-content strong { display: block; margin-bottom: 4px; font-size: 13.5px; }
+    .leaflet-popup-content span { color: var(--muted); }
+    .map-caption {
+      display: flex;
+      gap: 8px;
+      margin: 13px 0 0;
+      color: var(--muted);
+      font-size: 11.5px;
+      line-height: 1.6;
+    }
+    .map-caption svg { flex: none; width: 14px; height: 14px; margin-top: 3px; color: var(--gold); }
+
+    .stats {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .stat { padding: 20px 18px; background: #fff; }
+    .stat strong { display: block; font-size: 25px; font-weight: 900; letter-spacing: -.6px; }
+    .stat span { color: var(--muted); font-size: 11.5px; }
+
+    /* ---------- highlights ---------- */
+    .highlight-extract { margin-top: 42px; }
+    .highlight-extract > header { padding-bottom: 16px; border-bottom: 2px solid var(--ink); }
+    .highlight-extract h2 { margin: 6px 0 0; font-size: 26px; font-weight: 900; }
+    .highlight-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+    .highlight-card {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      transition: box-shadow .3s ease, transform .3s ease;
+    }
+    .highlight-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .highlight-photo { position: relative; height: 178px; overflow: hidden; background: #dfe3e5; }
+    .highlight-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+    .highlight-card:hover .highlight-photo img { transform: scale(1.05); }
+    .highlight-photo b {
+      position: absolute;
+      left: 0;
+      top: 0;
+      padding: 5px 11px;
+      color: #fff;
+      font-size: 11px;
+      letter-spacing: 1.6px;
+      background: var(--ink);
+    }
+    .highlight-photo figcaption {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+      padding: 2px 6px;
+      color: rgba(255, 255, 255, .84);
+      font-size: 9.5px;
+      background: rgba(15, 18, 21, .52);
+    }
+    .highlight-body { padding: 18px 18px 20px; }
+    .highlight-body h3 { margin: 0; font-size: 17px; font-weight: 850; }
+    .highlight-body p { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    .highlight-tags { margin-top: 13px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      padding: 3px 9px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+    .tag.ok { color: var(--green); border-color: rgba(45, 106, 67, .35); background: rgba(45, 106, 67, .07); }
+    .tag.warn { color: var(--red); border-color: rgba(169, 39, 39, .3); background: rgba(169, 39, 39, .06); }
+    .tag.cost { color: var(--gold); border-color: rgba(179, 121, 23, .34); background: rgba(179, 121, 23, .08); }
+
+    /* ---------- day rail ---------- */
+    .day-rail {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--line);
+    }
+    .day-rail-inner {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 11px 0;
+      scrollbar-width: none;
+    }
+    .day-rail-inner::-webkit-scrollbar { display: none; }
+    .day-chip {
+      flex: none;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+      min-width: 74px;
+      padding: 7px 11px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
+      transition: all .18s ease;
+    }
+    .day-chip b { color: var(--ink); font-size: 12.5px; font-weight: 850; letter-spacing: -.2px; }
+    .day-chip span { font-size: 10px; letter-spacing: .3px; }
+    .day-chip:hover { border-color: var(--ink); }
+    .day-chip.is-active { color: rgba(255, 255, 255, .74); background: var(--ink); border-color: var(--ink); }
+    .day-chip.is-active b { color: #fff; }
+
+    /* ---------- story chapters ---------- */
+    .story { border-bottom: 1px solid var(--line); }
+    .story:last-of-type { border-bottom: 0; }
+    .story-layout {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+      padding: 44px 0 48px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
+      gap: 34px;
+      align-items: start;
+    }
+    .story.reverse .story-layout { grid-template-columns: minmax(0, .94fr) minmax(0, 1.06fr); }
+    .story.reverse .story-visual { order: -1; }
+    .chapter-number {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 10px;
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.4px;
+    }
+    .chapter-number::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .story-copy h2 { margin: 0; font-size: 27px; font-weight: 900; }
+    .story-deck { margin: 12px 0 0; color: var(--muted); font-size: 13.5px; }
+    .story-meta {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+    .story-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .story-meta svg { width: 13px; height: 13px; color: var(--ink); }
+
+    .story-days { margin-top: 22px; display: grid; gap: 20px; }
+    .story-day { display: grid; grid-template-columns: 68px minmax(0, 1fr); gap: 14px; }
+    .story-date { padding-top: 2px; }
+    .story-date strong { display: block; font-size: 22px; font-weight: 900; letter-spacing: -.8px; }
+    .story-date span { color: var(--muted); font-size: 10.5px; letter-spacing: .6px; }
+    .story-body h4 { margin: 0 0 8px; font-size: 14.5px; font-weight: 850; }
+    .timeline { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+    .timeline li {
+      display: grid;
+      grid-template-columns: 84px 18px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      font-size: 12.5px;
+    }
+    .timeline .t-time { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 11.5px; padding-top: 1px; }
+    .timeline .t-icon { display: flex; justify-content: center; padding-top: 2px; }
+    .timeline .t-icon svg { width: 14px; height: 14px; }
+    .timeline .t-what { color: var(--ink); }
+    .timeline .t-what b { font-weight: 800; }
+    .timeline .t-what em { display: block; color: var(--muted); font-style: normal; font-size: 11.5px; margin-top: 2px; }
+    .timeline .t-what a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; word-break: break-all; }
+    .i-move svg { color: var(--blue); }
+    .i-food svg { color: var(--red); }
+    .i-sight svg { color: var(--green); }
+    .i-act svg { color: var(--gold); }
+    .i-stay svg { color: var(--teal); }
+
+    .story-visual { position: sticky; top: 74px; display: grid; gap: 10px; }
+    .story-visual figure { position: relative; margin: 0; height: 400px; overflow: hidden; background: #dfe3e5; }
+    .story-visual img { width: 100%; height: 100%; object-fit: cover; }
+    .story-visual figcaption {
+      position: absolute;
+      right: 7px;
+      bottom: 7px;
+      padding: 2px 7px;
+      color: rgba(255, 255, 255, .86);
+      font-size: 9.5px;
+      background: rgba(15, 18, 21, .55);
+    }
+    .story-visual.duo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .story-visual.duo figure { height: 260px; }
+    .story-visual.duo .visual-caption { grid-column: 1 / -1; }
+    .visual-caption { margin: 0; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+
+    /* ---------- costs ---------- */
+    .budget-hero {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .budget-total { padding: 26px 22px; background: var(--ink); color: #fff; }
+    .budget-total b { display: block; font-size: 34px; font-weight: 900; letter-spacing: -1.4px; }
+    .budget-total span { color: rgba(255, 255, 255, .68); font-size: 11.5px; }
+    .budget-total p { margin: 14px 0 0; color: rgba(255, 255, 255, .74); font-size: 11.5px; }
+    .budget-bars { padding: 22px; background: #fff; display: grid; gap: 14px; }
+    .bar-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) 108px; gap: 12px; align-items: center; font-size: 12.5px; }
+    .bar-row .bar-name { font-weight: 800; }
+    .bar-track { height: 10px; background: var(--surface); border: 1px solid var(--line); }
+    .bar-track i { display: block; height: 100%; }
+    .bar-row .bar-value { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .bar-transport i { background: var(--blue); }
+    .bar-stay i { background: var(--teal); }
+    .bar-act i { background: var(--gold); }
+    .bar-visa i { background: var(--red); }
+
+    .cost-block { margin-top: 34px; }
+    .cost-block h3 { margin: 0 0 4px; font-size: 17px; font-weight: 850; }
+    .cost-block > p { margin: 0 0 14px; color: var(--muted); font-size: 12.5px; }
+    .cost-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .cost-table caption { text-align: left; padding-bottom: 8px; color: var(--muted); font-size: 11.5px; }
+    .cost-table th, .cost-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .cost-table thead th {
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      background: var(--surface);
+      border-bottom: 2px solid var(--ink);
+    }
+    .cost-table td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .cost-table tbody tr:hover { background: rgba(23, 113, 110, .04); }
+    .cost-table tfoot td { font-weight: 850; border-top: 2px solid var(--ink); border-bottom: 0; background: var(--surface); }
+    .dot { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 999px; vertical-align: 1px; }
+    .dot.ok { background: var(--green); }
+    .dot.pending { background: var(--gold); }
+
+    /* ---------- culture / prep grid ---------- */
+    .culture-grid { margin-top: 26px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .culture-card { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); background: #fff; border: 1px solid var(--line); overflow: hidden; }
+    .culture-photo { position: relative; min-height: 210px; background: #dfe3e5; overflow: hidden; }
+    .culture-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+    .culture-card:hover .culture-photo img { transform: scale(1.05); }
+    .culture-photo figcaption { position: absolute; right: 6px; bottom: 6px; padding: 2px 6px; color: rgba(255, 255, 255, .84); font-size: 9.5px; background: rgba(15, 18, 21, .52); }
+    .culture-text { padding: 20px 20px 22px; }
+    .culture-text b { display: block; color: var(--teal); font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+    .culture-text h3 { margin: 7px 0 0; font-size: 17px; font-weight: 850; }
+    .culture-text p { margin: 8px 0 0; color: var(--muted); font-size: 12.5px; }
+
+    /* ---------- checklist ---------- */
+    .checklist-layout { margin-top: 26px; display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 26px; align-items: start; }
+    .readiness-card { position: sticky; top: 16px; padding: 24px 20px; background: var(--ink); color: #fff; }
+    .readiness-card strong { display: block; font-size: 42px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
+    .readiness-card span { display: block; margin-top: 10px; color: rgba(255, 255, 255, .72); font-size: 12px; }
+    .progress-track { margin-top: 16px; height: 6px; background: rgba(255, 255, 255, .2); }
+    .progress-track i { display: block; height: 100%; width: 0; background: #f2bd50; transition: width .35s ease; }
+    .readiness-card small { display: block; margin-top: 14px; color: rgba(255, 255, 255, .5); font-size: 10.5px; }
+
+    .check-groups { display: grid; gap: 20px; }
+    .check-group { border: 1px solid var(--line); background: #fff; }
+    .check-group > h3 {
+      margin: 0;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: .4px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .check-group > h3 svg { width: 15px; height: 15px; color: var(--teal); }
+    .check-group > h3 em { margin-left: auto; color: var(--muted); font-style: normal; font-size: 11px; font-weight: 600; }
+    .check-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+    .check-items .check-item:nth-child(odd) { border-right: 1px solid var(--line); }
+    .check-item input { flex: none; margin: 3px 0 0; width: 14px; height: 14px; accent-color: var(--teal); }
+    .check-item.is-done .ci-name { color: var(--muted); text-decoration: line-through; }
+    .ci-name { font-weight: 600; }
+    .ci-note { display: block; color: var(--muted); font-size: 11px; font-weight: 400; }
+
+    /* ---------- notes + credits ---------- */
+    .notes { padding: 58px 0; color: #fff; background: #1e2429; }
+    .notes-inner { width: min(calc(100% - 32px), var(--max)); margin: 0 auto; }
+    .notes h2 { margin: 6px 0 0; font-size: 26px; font-weight: 900; }
+    .notes .section-kicker { color: #f2bd50; }
+    .notes-lead { max-width: 46em; margin: 12px 0 0; color: #c8cdd1; font-size: 13.5px; }
+    .notes-grid { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #4a5055; }
+    .note-block { min-height: 190px; padding: 26px; background: #252c31; }
+    .note-block svg { width: 24px; height: 24px; color: #f2bd50; }
+    .note-block h3 { margin: 16px 0 7px; font-size: 16px; }
+    .note-block p { margin: 0; color: #c8cdd1; font-size: 13px; }
+
+    .credits { padding: 30px 0 38px; background: #111416; color: #aeb4b9; font-size: 11px; }
+    .credits-inner { width: min(calc(100% - 32px), var(--max)); margin: 0 auto; }
+    .credits a { color: #d9dde1; }
+    .credits p { margin: 0 0 8px; }
+    .credits .src { color: #7d848a; line-height: 1.75; }
+
+    /* ---------- responsive ---------- */
+    @media (max-width: 1024px) {
+      .highlight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .culture-grid { grid-template-columns: 1fr; }
+      .story-visual { position: static; }
+      .story-layout, .story.reverse .story-layout { grid-template-columns: 1fr; gap: 22px; }
+      .story.reverse .story-visual { order: 0; }
+      .story-visual figure { height: 300px; }
+      .notes-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 860px) {
+      .topbar { height: 100px; }
+      .workspace { inset: 100px 0 0 0; }
+      .workspace-tabs { width: 100%; height: 42px; display: flex; overflow-x: auto; scrollbar-width: none; }
+      .workspace-tabs::-webkit-scrollbar { display: none; }
+      .workspace-tab { flex: none; padding: 0 15px; font-size: 12px; }
+      .panel-heading { grid-template-columns: 1fr; align-items: start; gap: 12px; }
+      .panel-heading h2 { font-size: 24px; }
+      .hero { min-height: 460px; }
+      .hero-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .highlight-grid { grid-template-columns: 1fr; }
+      .budget-hero { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 72px minmax(0, 1fr); }
+      .bar-row .bar-value { grid-column: 1 / -1; text-align: left; }
+      .culture-card { grid-template-columns: 1fr; }
+      .culture-photo { min-height: 190px; }
+      .checklist-layout { grid-template-columns: 1fr; }
+      .readiness-card { position: static; }
+      .check-items { grid-template-columns: 1fr; }
+      .check-items .check-item:nth-child(odd) { border-right: 0; }
+      .notes-grid { grid-template-columns: 1fr; }
+      .story-day { grid-template-columns: 54px minmax(0, 1fr); gap: 11px; }
+      .story-date strong { font-size: 19px; }
+      .timeline li { grid-template-columns: 72px 16px minmax(0, 1fr); }
+      #routeMap { height: 400px; }
+      .story-visual.duo { grid-template-columns: 1fr; }
+      .story-visual.duo figure { height: 220px; }
+      .cost-table { font-size: 11.5px; }
+      .cost-table th, .cost-table td { padding: 8px 8px; }
+    }
+
+    /* ---------- print ---------- */
+    @media print {
+      body { overflow: visible; }
+      .topbar, .day-rail { display: none !important; }
+      .workspace { position: static; inset: auto; }
+      .panel {
+        position: static;
+        inset: auto;
+        opacity: 1 !important;
+        visibility: visible !important;
+        overflow: visible;
+        page-break-after: always;
+      }
+      .story-visual { position: static; }
+      .hero { min-height: 300px; }
+      .highlight-card, .culture-card, .story { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="wordmark">
+        <b>New Zealand 2026</b>
+        <span>南岛自驾 · 阿稻的行程</span>
+      </div>
+      <nav class="topnav">
+        <button type="button" id="copyLinkBtn"><i data-lucide="link"></i><span id="copyLinkText">复制链接</span></button>
+        <button type="button" id="printBtn"><i data-lucide="printer"></i>打印 / 存 PDF</button>
+      </nav>
+    </div>
+    <nav class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="行程分区">
+      <button type="button" class="workspace-tab is-active" role="tab" data-panel="panel-highlights" aria-selected="true"><i data-lucide="map"></i>行程亮点</button>
+      <button type="button" class="workspace-tab" role="tab" data-panel="panel-daily" aria-selected="false"><i data-lucide="calendar-days"></i>每日行程</button>
+      <button type="button" class="workspace-tab" role="tab" data-panel="panel-cost" aria-selected="false"><i data-lucide="wallet"></i>费用与预订</button>
+      <button type="button" class="workspace-tab" role="tab" data-panel="panel-culture" aria-selected="false"><i data-lucide="book-open"></i>南岛预习</button>
+      <button type="button" class="workspace-tab" role="tab" data-panel="panel-checklist" aria-selected="false"><i data-lucide="list-checks"></i>行前清单</button>
+    </nav>
+  </header>
+
+  <main class="workspace" id="workspace">
+
+    <!-- ============ PANEL 1 · 行程亮点 ============ -->
+    <section class="panel is-active" id="panel-highlights" role="tabpanel" aria-label="行程亮点">
+      <div class="hero">
+        <div class="hero-media">
+          <img src="assets/hero-pukaki-aoraki.jpg" alt="普卡基湖与远处的库克山" fetchpriority="high">
+        </div>
+        <div class="hero-body">
+          <p class="hero-eyebrow"><i data-lucide="compass"></i>Self-drive · 南岛环线</p>
+          <h1>把南岛的春天，<br>从海岸线一路开到雪线</h1>
+          <p class="hero-copy">2026 年 9 月底到 10 月初，从香港经悉尼进入新西兰，在基督城落地取车，沿东海岸南下但尼丁，穿过中奥塔哥抵达皇后镇，再经瓦纳卡、库克山、蒂卡波折回凯库拉出海，最后从基督城飞墨尔本回程。跳伞、冰川徒步、暗夜观星、出海观鲸，是这条线的四根主骨。</p>
+          <div class="hero-meta">
+            <div><strong>09.23 — 10.06</strong><span>2026 年 · 14 天 12 晚</span></div>
+            <div><strong>香港 · 出发</strong><span>悉尼 / 墨尔本 双向中转</span></div>
+            <div><strong>约 1,900 km</strong><span>基督城取还车 · 自驾环线</span></div>
+            <div><strong>6 人</strong><span>同行人数 · 部分段 2 / 4 人</span></div>
+          </div>
+        </div>
+        <span class="hero-credit">Lake Pukaki &amp; Aoraki／Krzysztof Golik, CC BY-SA 4.0</span>
+      </div>
+
+      <div class="panel-inner">
+        <section class="overview">
+          <div class="map-head">
+            <div>
+              <p class="section-kicker">Route map · 地理走向</p>
+              <h2>一条顺时针的南岛环线</h2>
+            </div>
+            <div class="map-legend" aria-label="交通方式图例">
+              <span><i class="legend-line flight"></i>航班</span>
+              <span><i class="legend-line road"></i>自驾</span>
+              <span><i class="legend-line walk"></i>徒步</span>
+              <span><i class="legend-line boat"></i>出海</span>
+            </div>
+          </div>
+          <div class="route-map-shell">
+            <div id="routeMap" role="img" aria-label="新西兰南岛行程地图，标有悉尼、基督城、但尼丁、皇后镇、格林诺奇、瓦纳卡、Twizel、库克山、蒂卡波、凯库拉与墨尔本"></div>
+          </div>
+          <p class="map-caption"><i data-lucide="info"></i><span>点位使用城市、机场、步道口或海湾的真实经纬度；彩色连线表达本次行程的衔接关系，不代表航迹或公路的逐弯实际走向。香港往返段超出本图范围，未作标示；凯库拉观鲸海域为示意点位，实际取决于当日抹香鲸位置。</span></p>
+
+          <div class="stats" aria-label="行程统计">
+            <div class="stat"><strong>14 / 12</strong><span>日历天数 / 住宿晚数</span></div>
+            <div class="stat"><strong>6</strong><span>核心体验（已付款预订）</span></div>
+            <div class="stat"><strong>10 站</strong><span>过夜与停留城镇</span></div>
+            <div class="stat"><strong>¥2.69 万</strong><span>单人已确认支出 / 含国际机票</span></div>
+          </div>
+        </section>
+
+        <section class="highlight-extract" aria-label="行程亮点">
+          <header>
+            <p class="section-kicker">Six highlights · 六个非做不可</p>
+            <h2>这趟旅行的骨架，<br>是六件已经付了钱的事</h2>
+          </header>
+          <div class="highlight-grid">
+            <article class="highlight-card">
+              <figure class="highlight-photo">
+                <b>01</b>
+                <img src="assets/coronet-peak.jpg" alt="皇后镇上空俯瞰海耶斯湖与皇冠峰" loading="lazy">
+                <figcaption>Lake Hayes &amp; Coronet Peak／Bernard Spragg, PD</figcaption>
+              </figure>
+              <div class="highlight-body">
+                <h3>15,000 英尺跳伞</h3>
+                <p>NZONE Skydive 皇后镇最高档位，出舱高度 15,000 英尺，自由落体约 60 秒。落地前整个瓦卡蒂普湖和卓越山脉都在脚下。抵达皇后镇第二天清早六点二十集合，天气不好还有后面两天可以顺延。</p>
+                <div class="highlight-tags"><span class="tag ok">已预订</span><span class="tag cost">¥1,976 / 人</span><span class="tag">09.28</span></div>
+              </div>
+            </article>
+
+            <article class="highlight-card">
+              <figure class="highlight-photo">
+                <b>02</b>
+                <img src="assets/glenorchy-dart.jpg" alt="格林诺奇附近的达特河与雪山" loading="lazy">
+                <figcaption>Dart River, Glenorchy／profernity, CC BY 2.0</figcaption>
+              </figure>
+              <div class="highlight-body">
+                <h3>格林诺奇冰川徒步</h3>
+                <p>从皇后镇沿瓦卡蒂普湖西岸开到格林诺奇，进入达特／里斯河谷的冰川区。全程需要向导带队，是这趟单项最贵、也最不可替代的一天。集合点 35 Mull Street。</p>
+                <div class="highlight-tags"><span class="tag ok">已预订</span><span class="tag cost">¥2,800 / 人</span><span class="tag">09.29</span></div>
+              </div>
+            </article>
+
+            <article class="highlight-card">
+              <figure class="highlight-photo">
+                <b>03</b>
+                <img src="assets/aoraki-summer.jpg" alt="库克山国家公园" loading="lazy">
+                <figcaption>Aoraki／Mount Cook NP／lumoplank, CC0</figcaption>
+              </figure>
+              <div class="highlight-body">
+                <h3>库克山胡克谷步道</h3>
+                <p>南岛最高峰脚下最经典的一条平缓步道，三座吊桥通向胡克冰川终端湖。前一晚住 Twizel，第二天早上从白马饭店方向进园，午后再往蒂卡波。</p>
+                <div class="highlight-tags"><span class="tag">自由行程</span><span class="tag">10.02 上午</span><span class="tag">往返约 3 小时</span></div>
+              </div>
+            </article>
+
+            <article class="highlight-card">
+              <figure class="highlight-photo">
+                <b>04</b>
+                <img src="assets/tekapo-stars.jpg" alt="蒂卡波湖上的银河" loading="lazy">
+                <figcaption>Milky Way, Lake Tekapo／Sky_xe, CC BY-SA 4.0</figcaption>
+              </figure>
+              <div class="highlight-body">
+                <h3>蒂卡波暗夜星空</h3>
+                <p>奥拉基·麦肯奇是全球最大的国际暗夜保护区之一，蒂卡波镇的路灯都为观星做过遮光改造。住一晚，把好牧羊人教堂的夜空留给自己。</p>
+                <div class="highlight-tags"><span class="tag ok">住宿已订</span><span class="tag">10.02 夜</span><span class="tag warn">看天气</span></div>
+              </div>
+            </article>
+
+            <article class="highlight-card">
+              <figure class="highlight-photo">
+                <b>05</b>
+                <img src="assets/kaikoura-whale.jpg" alt="凯库拉海域下潜的抹香鲸" loading="lazy">
+                <figcaption>Sperm whale near Kaikoura／M. van den Berg, CC BY-SA 4.0</figcaption>
+              </figure>
+              <div class="highlight-body">
+                <h3>凯库拉观鲸 + 出海海钓</h3>
+                <p>凯库拉海沟离岸极近，抹香鲸常年驻留。观鲸之外还约了 Tomo 船长的海钓，9 月起才恢复营业，10 月前不能钓龙虾。两个项目分两天，留出晕船缓冲。</p>
+                <div class="highlight-tags"><span class="tag ok">均已预订</span><span class="tag cost">¥666 + ¥536</span><span class="tag">10.04</span></div>
+              </div>
+            </article>
+
+            <article class="highlight-card">
+              <figure class="highlight-photo">
+                <b>06</b>
+                <img src="assets/rob-roy-glacier.jpg" alt="罗布罗伊冰川步道" loading="lazy">
+                <figcaption>Rob Roy Glacier Walk／Steve Collis, CC BY 2.0</figcaption>
+              </figure>
+              <div class="highlight-body">
+                <h3>瓦纳卡神树与罗布罗伊冰川</h3>
+                <p>那棵长在湖里的柳树是南岛被拍得最多的一棵树，清晨光线最好。同一天可以再进马特森湾方向的马特波恩国家公园走罗布罗伊冰川步道，末段抬头就是悬冰川。</p>
+                <div class="highlight-tags"><span class="tag">自由行程</span><span class="tag">10.01</span><span class="tag warn">砂石路谨慎</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ============ PANEL 2 · 每日行程 ============ -->
+    <section class="panel" id="panel-daily" role="tabpanel" aria-label="每日行程">
+      <div class="day-rail">
+        <div class="day-rail-inner" id="dayRail"></div>
+      </div>
+
+      <section class="story" id="day-0923">
+        <div class="story-layout">
+          <div class="story-copy">
+            <p class="chapter-number">Chapter 01</p>
+            <h2>先飞过赤道，<br>在悉尼把时差走掉</h2>
+            <p class="story-deck">香港夜航过夜到悉尼，落地不进酒店，直接把一整个白天用完：海港区走一圈，再去邦迪走完那条最有名的海岸线，傍晚回机场飞基督城。第一晚住在基督城机场旁的 Sudima，方便第二天早上取车。</p>
+            <div class="story-meta">
+              <span><i data-lucide="calendar"></i>09.23 — 09.24</span>
+              <span><i data-lucide="plane"></i>香港 → 悉尼 → 基督城</span>
+              <span><i data-lucide="footprints"></i>邦迪—库吉海岸线 6km</span>
+              <span><i data-lucide="bed-double"></i>基督城 1 晚</span>
+            </div>
+            <div class="story-days">
+              <div class="story-day">
+                <div class="story-date"><strong>09.23</strong><span>周三 · DAY 1</span></div>
+                <div class="story-body">
+                  <h4>夜航出发</h4>
+                  <ul class="timeline">
+                    <li class="i-move"><span class="t-time">19:30—06:45<sup>+1</sup></span><span class="t-icon"><i data-lucide="plane"></i></span><span class="t-what"><b>香港 → 悉尼</b><em>红眼航班，落地即换成南半球时间</em></span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="story-day">
+                <div class="story-date"><strong>09.24</strong><span>周四 · DAY 2</span></div>
+                <div class="story-body">
+                  <h4>悉尼一日：海港区 + 邦迪海岸线</h4>
+                  <ul class="timeline">
+                    <li class="i-food"><span class="t-time">08:00—09:00</span><span class="t-icon"><i data-lucide="coffee"></i></span><span class="t-what"><b>The Brothers cafe brunch</b><em>也可以就近换一家，别为了一顿饭多绕路</em></span></li>
+                    <li class="i-sight"><span class="t-time">09:00—10:30</span><span class="t-icon"><i data-lucide="footprints"></i></span><span class="t-what"><b>海港区 citywalk</b><em>Circular Quay 最美车站 → 悉尼歌剧院 → Mrs Macquarie's Chair</em></span></li>
+                    <li class="i-move"><span class="t-time">10:30—11:30</span><span class="t-icon"><i data-lucide="bus"></i></span><span class="t-what"><b>前往邦迪海滩</b><em>直接公交；或轮渡到 Watsons Bay 再转公交</em></span></li>
+                    <li class="i-food"><span class="t-time">12:00—13:30</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>午饭</b><em>在 Bondi Beach 附近解决</em></span></li>
+                    <li class="i-sight"><span class="t-time">13:30—16:15</span><span class="t-icon"><i data-lucide="footprints"></i></span><span class="t-what"><b>邦迪—库吉海岸线徒步</b><em>Bondi Beach → Waverley Cemetery → Coogee Beach；从 Coogee 打车去机场约 20 分钟</em></span></li>
+                    <li class="i-move"><span class="t-time">19:15—00:20<sup>+1</sup></span><span class="t-icon"><i data-lucide="plane"></i></span><span class="t-what"><b>悉尼 → 基督城</b><em>跨塔斯曼海，机票 ¥24,168 / 2 人（含全程国际段）</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>基督城苏迪马机场酒店 Sudima Christchurch Airport</b><em>已预订 · ¥683.89 / 2 人</em></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual duo">
+            <figure><img src="assets/sydney-harbour.jpg" alt="悉尼海港大桥与歌剧院" loading="lazy"><figcaption>Gibrate1, CC0</figcaption></figure>
+            <figure><img src="assets/bondi-coogee.jpg" alt="邦迪至库吉海岸线木栈道与 Waverley 公墓" loading="lazy"><figcaption>Nick-D, CC BY-SA 4.0</figcaption></figure>
+            <p class="visual-caption">邦迪—库吉这条 6 公里海岸线几乎全程铺装，中途经过 Waverley 公墓的悬崖段，是把长途飞行的困意走掉最有效的方式。走完直接从库吉打车去机场，不用折回市区。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story reverse" id="day-0925">
+        <div class="story-layout">
+          <div class="story-copy">
+            <p class="chapter-number">Chapter 02</p>
+            <h2>南下但尼丁，<br>把奥塔哥半岛走成一条海岸线</h2>
+            <p class="story-deck">从基督城取车沿一号公路南下四个半小时。但尼丁是苏格兰移民建起来的城市，火车站、八角广场和世界最陡街道都在步行范围内；城外的奥塔哥半岛才是重点——Sandfly Bay 的海狮、Tunnel Beach 的海崖，和天黑前那批上岸的小蓝企鹅。</p>
+            <div class="story-meta">
+              <span><i data-lucide="calendar"></i>09.25 — 09.26</span>
+              <span><i data-lucide="car"></i>基督城 → 但尼丁 · 自驾 4.5h</span>
+              <span><i data-lucide="binoculars"></i>小企鹅归巢（Pilots Beach）</span>
+              <span><i data-lucide="bed-double"></i>但尼丁 2 晚 · ¥611.84 / 人</span>
+            </div>
+            <div class="story-days">
+              <div class="story-day">
+                <div class="story-date"><strong>09.25</strong><span>周五 · DAY 3</span></div>
+                <div class="story-body">
+                  <h4>取车南下，傍晚上半岛</h4>
+                  <ul class="timeline">
+                    <li class="i-move"><span class="t-time">09:00—16:30</span><span class="t-icon"><i data-lucide="car"></i></span><span class="t-what"><b>基督城 → 但尼丁</b><em>自驾约 4.5 小时；路上可在 Timaru、Oamaru 补给</em></span></li>
+                    <li class="i-sight"><span class="t-time">17:00—18:30</span><span class="t-icon"><i data-lucide="mountain"></i></span><span class="t-what"><b>Sandfly Bay Track</b><em>陡沙丘下切到海滩，常见新西兰海狮，保持 10 米以上距离</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿但尼丁</b><em>已预订 · 6 人 ¥3,671.04（两晚合计）</em></span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="story-day">
+                <div class="story-date"><strong>09.26</strong><span>周六 · DAY 4</span></div>
+                <div class="story-body">
+                  <h4>市区 citywalk + 海崖 + 企鹅归巢</h4>
+                  <ul class="timeline">
+                    <li class="i-sight"><span class="t-time">09:00—12:00</span><span class="t-icon"><i data-lucide="footprints"></i></span><span class="t-what"><b>市区 citywalk</b><em>鲍德温街（吉尼斯世界最陡坡）→ 但尼丁火车站 → 八角广场 → 市政厅 → 圣保罗大教堂 → 奥塔哥第一教堂</em></span></li>
+                    <li class="i-food"><span class="t-time">12:00—13:00</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>市区吃午饭</b></span></li>
+                    <li class="i-sight"><span class="t-time">13:30—15:00</span><span class="t-icon"><i data-lucide="mountain"></i></span><span class="t-what"><b>Tunnel Beach</b><em>下坡好走上坡累，注意涨潮时间</em></span></li>
+                    <li class="i-sight"><span class="t-time">15:00—17:00</span><span class="t-icon"><i data-lucide="footprints"></i></span><span class="t-what"><b>海岸线徒步 Karetai Track</b><em>往返 1.5h；导航 Karetai Track，会经过 Smails Beach，路边停车位很多</em></span></li>
+                    <li class="i-act"><span class="t-time">18:00—19:00</span><span class="t-icon"><i data-lucide="ticket"></i></span><span class="t-what"><b>小企鹅归巢</b><em>1245 Harington Point Road, Otago Peninsula · <a href="http://bluepenguins.co.nz" target="_blank" rel="noreferrer">bluepenguins.co.nz</a>（票据已存档）</em></span></li>
+                    <li class="i-food"><span class="t-time">19:00—20:00</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>晚餐</b><em>也可以买海鲜回民宿自己做</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿但尼丁</b><em>已预订</em></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual duo">
+            <figure><img src="assets/dunedin-station.jpg" alt="但尼丁火车站" loading="lazy"><figcaption>W. Bulach, CC BY-SA 4.0</figcaption></figure>
+            <figure><img src="assets/sandfly-bay.jpg" alt="Sandfly Bay 的沙丘与海岸" loading="lazy"><figcaption>Aleks Dahlberg, CC0</figcaption></figure>
+            <p class="visual-caption">Sandfly Bay 安排了两次（25 日傍晚、27 日上午），一次赌落日一次赌光线；小企鹅归巢是固定场次，必须在天黑前到达 Pilots Beach，迟到就进不去。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story" id="day-0927">
+        <div class="story-layout">
+          <div class="story-copy">
+            <p class="chapter-number">Chapter 03</p>
+            <h2>皇后镇：<br>从 15,000 英尺开始认识它</h2>
+            <p class="story-deck">上午在半岛补一次 Sandfly Bay，中午翻过中奥塔哥到皇后镇。第二天清早六点二十去 NZONE，出舱高度 15,000 英尺，落地时天刚亮透；下午去箭镇买毛衣、吃 Fergburger，傍晚看天气决定要不要上天空缆车玩 Luge。</p>
+            <div class="story-meta">
+              <span><i data-lucide="calendar"></i>09.27 — 09.28</span>
+              <span><i data-lucide="car"></i>但尼丁 → 皇后镇 · 自驾 3.5h</span>
+              <span><i data-lucide="parachute"></i>NZONE 15,000ft · ¥1,976 / 人</span>
+              <span><i data-lucide="bed-double"></i>皇后镇 4 晚 · ¥2,400 / 人</span>
+            </div>
+            <div class="story-days">
+              <div class="story-day">
+                <div class="story-date"><strong>09.27</strong><span>周日 · DAY 5</span></div>
+                <div class="story-body">
+                  <h4>转场皇后镇</h4>
+                  <ul class="timeline">
+                    <li class="i-sight"><span class="t-time">09:30—11:00</span><span class="t-icon"><i data-lucide="mountain"></i></span><span class="t-what"><b>Sandfly Bay Track</b><em>上午光线版，再走一次</em></span></li>
+                    <li class="i-food"><span class="t-time">11:00—13:00</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>午饭</b><em>出发前吃饱，中途都是小镇</em></span></li>
+                    <li class="i-move"><span class="t-time">13:00—16:00</span><span class="t-icon"><i data-lucide="car"></i></span><span class="t-what"><b>但尼丁 → 皇后镇</b><em>自驾约 3.5 小时，经 Cromwell 一带</em></span></li>
+                    <li class="i-sight"><span class="t-time">16:00—16:30</span><span class="t-icon"><i data-lucide="mountain"></i></span><span class="t-what"><b>Jack Tewa Park 大滑索</b><em>Hanley's Farm playground，免费，热身用</em></span></li>
+                    <li class="i-food"><span class="t-time">18:00—20:00</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>吃牛排 · Jervois Steak House</b><em>待预订 —— 皇后镇热门餐厅建议提前订位</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿皇后镇</b><em>已预订 · 6 人 ¥14,400（四晚合计）</em></span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="story-day">
+                <div class="story-date"><strong>09.28</strong><span>周一 · DAY 6</span></div>
+                <div class="story-body">
+                  <h4>跳伞 → 箭镇 → 天空缆车</h4>
+                  <ul class="timeline">
+                    <li class="i-act"><span class="t-time">06:20—10:00</span><span class="t-icon"><i data-lucide="ticket"></i></span><span class="t-what"><b>NZONE 跳伞 15,000ft</b><em>集合 35 Shotover Street · 已预订 · ¥1,976.4 / 人</em></span></li>
+                    <li class="i-sight"><span class="t-time">10:00—10:15</span><span class="t-icon"><i data-lucide="mountain"></i></span><span class="t-what"><b>Lake Wakatipu Viewpoint 皇后镇观景台</b></span></li>
+                    <li class="i-sight"><span class="t-time">10:30—15:30</span><span class="t-icon"><i data-lucide="footprints"></i></span><span class="t-what"><b>箭镇逛街吃饭</b><em>Arrowtown Wine Store 左边有免费停车场；Golden Fleece 买毛衣</em></span></li>
+                    <li class="i-food"><span class="t-time">12:00—13:00</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>Fergburger 大脸汉堡</b><em>排队是常态</em></span></li>
+                    <li class="i-act"><span class="t-time">16:00—18:00</span><span class="t-icon"><i data-lucide="ticket"></i></span><span class="t-what"><b>天空缆车 + Luge 滑板车</b><em>Skyline Gondola Base, 53 Brecon St · 待预订，看天气，天气不好挪一天</em></span></li>
+                    <li class="i-food"><span class="t-time">18:00—19:00</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>越南汤粉</b><em>Saigon Kingdom, Steamer Wharf</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿皇后镇</b><em>已预订</em></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual duo">
+            <figure><img src="assets/queenstown-gondola.jpg" alt="从皇后镇缆车俯瞰瓦卡蒂普湖" loading="lazy"><figcaption>Lake Wakatipu, CC BY-SA 3.0</figcaption></figure>
+            <figure><img src="assets/arrowtown-autumn.jpg" alt="箭镇箭河边的树林" loading="lazy"><figcaption>Bernard Spragg, CC0</figcaption></figure>
+            <p class="visual-caption">跳伞和 Luge 都吃天气，所以皇后镇留了四晚：任何一项被吹掉，后面两天都还有位置可以挪。箭镇离皇后镇只要 20 分钟，是被雨天赶下山之后最好的备选。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story reverse" id="day-0929">
+        <div class="story-layout">
+          <div class="story-copy">
+            <p class="chapter-number">Chapter 04</p>
+            <h2>格林诺奇的冰川，<br>和沙特欧瓦河的水花</h2>
+            <p class="story-deck">沿瓦卡蒂普湖西岸开一小时到格林诺奇，跟向导进达特／里斯河谷做冰川徒步——这是全程单项最贵的一天。第二天分头行动：一人去卡德罗纳滑雪场，其余人在皇后镇睡到自然醒，中午集合去 Shotover Jet 坐喷气艇。</p>
+            <div class="story-meta">
+              <span><i data-lucide="calendar"></i>09.29 — 09.30</span>
+              <span><i data-lucide="snowflake"></i>冰川徒步 · ¥2,800 / 人</span>
+              <span><i data-lucide="waves"></i>Shotover Jet 喷气艇 · 已预订</span>
+              <span><i data-lucide="bed-double"></i>皇后镇（续住）</span>
+            </div>
+            <div class="story-days">
+              <div class="story-day">
+                <div class="story-date"><strong>09.29</strong><span>周二 · DAY 7</span></div>
+                <div class="story-body">
+                  <h4>冰川徒步日</h4>
+                  <ul class="timeline">
+                    <li class="i-food"><span class="t-time">11:30—12:30</span><span class="t-icon"><i data-lucide="coffee"></i></span><span class="t-what"><b>皇后镇 brunch</b><em>Odd Saint</em></span></li>
+                    <li class="i-move"><span class="t-time">12:30—13:30</span><span class="t-icon"><i data-lucide="car"></i></span><span class="t-what"><b>皇后镇 → 格林诺奇</b><em>湖西岸公路，一路都是观景点</em></span></li>
+                    <li class="i-act"><span class="t-time">13:30—16:00</span><span class="t-icon"><i data-lucide="ticket"></i></span><span class="t-what"><b>格林诺奇冰川徒步</b><em>集合点 35 Mull Street, Glenorchy · 已预订 · ¥2,800 / 人</em></span></li>
+                    <li class="i-sight"><span class="t-time">14:00—15:00</span><span class="t-icon"><i data-lucide="mountain"></i></span><span class="t-what"><b>格林诺奇镇与码头</b><em>那座红顶船屋就在这里</em></span></li>
+                    <li class="i-sight"><span class="t-time">16:30—18:00</span><span class="t-icon"><i data-lucide="footprints"></i></span><span class="t-what"><b>皇后镇 citywalk</b><em>湖滨步道 → 湖边项目 → 镇上买东西</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿皇后镇</b><em>已预订</em></span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="story-day">
+                <div class="story-date"><strong>09.30</strong><span>周三 · DAY 8</span></div>
+                <div class="story-body">
+                  <h4>分头行动：滑雪 / 喷气艇</h4>
+                  <ul class="timeline">
+                    <li class="i-act"><span class="t-time">07:45—18:00</span><span class="t-icon"><i data-lucide="ticket"></i></span><span class="t-what"><b>阿韬：卡德罗纳滑雪</b><em>皇后镇有往返班车，<a href="https://secure.cardrona-treblecone.com/l/summer-transport/p/queenstown-transport-2" target="_blank" rel="noreferrer">查看接送班次</a></em></span></li>
+                    <li class="i-food"><span class="t-time">10:00—12:30</span><span class="t-icon"><i data-lucide="coffee"></i></span><span class="t-what"><b>brunch</b><em>不滑雪的人慢慢吃</em></span></li>
+                    <li class="i-act"><span class="t-time">12:30—14:00</span><span class="t-icon"><i data-lucide="ticket"></i></span><span class="t-what"><b>喷气艇 Shotover Jet</b><em>需自驾集合：Shotover Jet Beach 3 Arthurs Point Road · 已预订</em></span></li>
+                    <li class="i-sight"><span class="t-time">14:00—18:00</span><span class="t-icon"><i data-lucide="shopping-bag"></i></span><span class="t-what"><b>citywalk 逛逛</b><em>补给、买纪念品、准备转场</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿皇后镇</b><em>已预订 · 最后一晚</em></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual duo">
+            <figure><img src="assets/glenorchy-dart.jpg" alt="格林诺奇附近的达特河" loading="lazy"><figcaption>profernity, CC BY 2.0</figcaption></figure>
+            <figure><img src="assets/shotover-jet.jpg" alt="沙特欧瓦河上的喷气艇" loading="lazy"><figcaption>Bernard Spragg, CC0</figcaption></figure>
+            <p class="visual-caption">冰川徒步的集合时间是 13:30，所以这天上午刻意留白——不安排任何需要赶的行程，避免向导等人。喷气艇是自驾集合，导航到 Arthurs Point 而不是皇后镇市区。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story" id="day-1001">
+        <div class="story-layout">
+          <div class="story-copy">
+            <p class="chapter-number">Chapter 05</p>
+            <h2>瓦纳卡的一棵树，<br>和一条通向悬冰川的步道</h2>
+            <p class="story-deck">翻皇冠山脉到瓦纳卡只要一小时。上午先去湖边和那棵神树，吃 brunch、逛几家小店；下午进马特波恩国家公园走 Rob Roy Glacier Track，来回 3—4 小时，末段抬头就是悬冰川。傍晚继续北上，宿在麦肯奇盆地的 Twizel。</p>
+            <div class="story-meta">
+              <span><i data-lucide="calendar"></i>10.01</span>
+              <span><i data-lucide="car"></i>皇后镇 → 瓦纳卡 → Twizel</span>
+              <span><i data-lucide="footprints"></i>Rob Roy 步道 3—4h</span>
+              <span><i data-lucide="bed-double"></i>Twizel 1 晚 · ¥406.15 / 人</span>
+            </div>
+            <div class="story-days">
+              <div class="story-day">
+                <div class="story-date"><strong>10.01</strong><span>周四 · DAY 9</span></div>
+                <div class="story-body">
+                  <h4>瓦纳卡整日 + 转场 Twizel</h4>
+                  <ul class="timeline">
+                    <li class="i-move"><span class="t-time">09:00—10:00</span><span class="t-icon"><i data-lucide="car"></i></span><span class="t-what"><b>皇后镇 → 瓦纳卡</b><em>走皇冠山脉公路（Crown Range），冬春季注意结冰</em></span></li>
+                    <li class="i-sight"><span class="t-time">10:00—11:00</span><span class="t-icon"><i data-lucide="mountain"></i></span><span class="t-what"><b>瓦纳卡湖</b></span></li>
+                    <li class="i-food"><span class="t-time">10:00—11:00</span><span class="t-icon"><i data-lucide="coffee"></i></span><span class="t-what"><b>吃 brunch</b><em>Scroggin Coffee and Eatery</em></span></li>
+                    <li class="i-sight"><span class="t-time">11:00—12:00</span><span class="t-icon"><i data-lucide="camera"></i></span><span class="t-what"><b>Wanaka 神树</b><em>停车导航 The Wanaka Watersports Facility</em></span></li>
+                    <li class="i-sight"><span class="t-time">午后</span><span class="t-icon"><i data-lucide="shopping-bag"></i></span><span class="t-what"><b>逛小店</b><em>Wools of Wanaka；The Next Chapter 独立书店；Revology 文创杂货；Coastal Cowhides 牛皮包</em></span></li>
+                    <li class="i-sight"><span class="t-time">14:00—18:00</span><span class="t-icon"><i data-lucide="footprints"></i></span><span class="t-what"><b>Rob Roy Glacier Track 徒步</b><em>3—4 小时；进山路段为砂石路，小心慢行</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿 Twizel</b><em>已预订 · 6 人 ¥2,436.92</em></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual duo">
+            <figure><img src="assets/wanaka-tree.jpg" alt="瓦纳卡湖里的那棵柳树" loading="lazy"><figcaption>AJMANDELL1, CC BY-SA 4.0</figcaption></figure>
+            <figure><img src="assets/rob-roy-glacier.jpg" alt="罗布罗伊冰川步道的吊桥与河谷" loading="lazy"><figcaption>Steve Collis, CC BY 2.0</figcaption></figure>
+            <p class="visual-caption">神树在清晨和日落时人最少；Rob Roy 的入口 Raspberry Creek 停车场需要经过一段无桥涉水路面，雨后水位会上涨，出发前先查 DOC 的步道状态。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story reverse" id="day-1002">
+        <div class="story-layout">
+          <div class="story-copy">
+            <p class="chapter-number">Chapter 06</p>
+            <h2>库克山的三座吊桥，<br>蒂卡波的一整片银河</h2>
+            <p class="story-deck">从 Twizel 半小时进库克山国家公园，上午走胡克步道和塔斯曼冰川步道，看终端湖上的浮冰。下午翻到蒂卡波，这是奥拉基·麦肯奇国际暗夜保护区的核心——住一晚，把夜空留够时间。第二天上午在湖边慢慢逛，下午长途开去凯库拉。</p>
+            <div class="story-meta">
+              <span><i data-lucide="calendar"></i>10.02 — 10.03</span>
+              <span><i data-lucide="mountain-snow"></i>胡克谷 + 塔斯曼冰川</span>
+              <span><i data-lucide="star"></i>蒂卡波观星 · ¥933.33 / 人（住宿）</span>
+              <span><i data-lucide="car"></i>蒂卡波 → 凯库拉 · 5h</span>
+            </div>
+            <div class="story-days">
+              <div class="story-day">
+                <div class="story-date"><strong>10.02</strong><span>周五 · DAY 10</span></div>
+                <div class="story-body">
+                  <h4>库克山徒步 → 蒂卡波</h4>
+                  <ul class="timeline">
+                    <li class="i-move"><span class="t-time">08:00—09:00</span><span class="t-icon"><i data-lucide="car"></i></span><span class="t-what"><b>Twizel → 库克山</b><em>半小时车程，沿普卡基湖西岸进园</em></span></li>
+                    <li class="i-sight"><span class="t-time">09:00—14:00</span><span class="t-icon"><i data-lucide="mountain-snow"></i></span><span class="t-what"><b>胡克步道 + 塔斯曼冰川徒步</b><em>Hooker Valley Track（三座吊桥到终端湖）；Tasman River &amp; Lake 步道</em></span></li>
+                    <li class="i-move"><span class="t-time">15:00—16:00</span><span class="t-icon"><i data-lucide="car"></i></span><span class="t-what"><b>库克山 → 蒂卡波湖</b></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿蒂卡波 · 观星</b><em>已预订 · 6 人 ¥5,600；镇上路灯为暗夜保护做过遮光</em></span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="story-day">
+                <div class="story-date"><strong>10.03</strong><span>周六 · DAY 11</span></div>
+                <div class="story-body">
+                  <h4>湖边半日 + 长途转场</h4>
+                  <ul class="timeline">
+                    <li class="i-sight"><span class="t-time">09:00—12:00</span><span class="t-icon"><i data-lucide="mountain"></i></span><span class="t-what"><b>蒂卡波湖周边逛一逛</b><em>好牧羊人教堂、牧羊犬铜像、湖畔步道</em></span></li>
+                    <li class="i-move"><span class="t-time">13:00—18:00</span><span class="t-icon"><i data-lucide="car"></i></span><span class="t-what"><b>蒂卡波 → 凯库拉</b><em>5 小时车程，途经 Fairlie 小镇（那家肉派值得停）</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿凯库拉</b><em>已预订 · 6 人 ¥5,257.68（两晚合计）</em></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual duo">
+            <figure><img src="assets/hooker-valley.jpg" alt="胡克谷与库克山" loading="lazy"><figcaption>Pseudopanax, CC BY 3.0</figcaption></figure>
+            <figure><img src="assets/tekapo-church.jpg" alt="蒂卡波湖畔的好牧羊人教堂" loading="lazy"><figcaption>Jillianalma, CC BY-SA 4.0</figcaption></figure>
+            <p class="visual-caption">胡克步道全程平缓、来回约 3 小时，是库克山性价比最高的一条；蒂卡波到凯库拉这段 5 小时是全程最长的一次驾驶，安排在上午先玩够、下午专心开车。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story" id="day-1004">
+        <div class="story-layout">
+          <div class="story-copy">
+            <p class="chapter-number">Chapter 07</p>
+            <h2>凯库拉：<br>一天出两次海</h2>
+            <p class="story-deck">凯库拉海沟离岸只有几公里，深水把抹香鲸、海豚和信天翁都带到了岸边。上午跟 Tomo 船长出海钓鱼（9 月起才恢复营业，10 月前不能钓龙虾），下午换船去看鲸。两趟之间留了四个多小时，给晕船和补觉。</p>
+            <div class="story-meta">
+              <span><i data-lucide="calendar"></i>10.04</span>
+              <span><i data-lucide="fish"></i>Tomo 船长海钓 · ¥536.4 / 人</span>
+              <span><i data-lucide="waves"></i>Whale Watch Kaikoura · ¥666 / 人</span>
+              <span><i data-lucide="bed-double"></i>凯库拉（续住）</span>
+            </div>
+            <div class="story-days">
+              <div class="story-day">
+                <div class="story-date"><strong>10.04</strong><span>周日 · DAY 12</span></div>
+                <div class="story-body">
+                  <h4>海钓 + 观鲸</h4>
+                  <ul class="timeline">
+                    <li class="i-act"><span class="t-time">09:10—11:00</span><span class="t-icon"><i data-lucide="fish"></i></span><span class="t-what"><b>出海海钓</b><em>码头在 24 Moa Road 对面（across the road at the waters edge）· 已预订 · ¥536.4 / 人</em></span></li>
+                    <li class="i-food"><span class="t-time">午间</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>吃小龙虾 / 休息</b><em>凯库拉在毛利语里就是「吃龙虾的地方」</em></span></li>
+                    <li class="i-act"><span class="t-time">15:30—18:00</span><span class="t-icon"><i data-lucide="waves"></i></span><span class="t-what"><b>观鲸 Whale Watch Kaikoura</b><em>集合点 1 Whaleway Station Road · 已预订 · ¥666 / 人；风浪过大会取消并退款</em></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿凯库拉</b><em>已预订</em></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual duo">
+            <figure><img src="assets/kaikoura-coast.jpg" alt="凯库拉的海岸与雪山" loading="lazy"><figcaption>Kaikoura coast, CC BY-SA 2.0</figcaption></figure>
+            <figure><img src="assets/kaikoura-seal.jpg" alt="凯库拉岸边的新西兰海狗" loading="lazy"><figcaption>Oren Rozen, CC BY-SA 3.0</figcaption></figure>
+            <p class="visual-caption">凯库拉是全程唯一「雪山直接压在海面上」的地方。两趟出海都受海况影响，观鲸公司会在开船前几小时通知；提前备好晕船药，比临时买有用。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story reverse" id="day-1005">
+        <div class="story-layout">
+          <div class="story-copy">
+            <p class="chapter-number">Chapter 08</p>
+            <h2>还车、跨海，<br>在墨尔本机场睡最后一晚</h2>
+            <p class="story-deck">上午从凯库拉开回基督城还车，下午飞墨尔本，住机场旁的酒店，第二天中午直飞香港。这一段没有安排任何观光——把 1,900 公里之后的疲惫，留给一次干净的收尾。</p>
+            <div class="story-meta">
+              <span><i data-lucide="calendar"></i>10.05 — 10.06</span>
+              <span><i data-lucide="car"></i>凯库拉 → 基督城 · 3h 还车</span>
+              <span><i data-lucide="plane"></i>CHC → MEL → HKG</span>
+              <span><i data-lucide="bed-double"></i>墨尔本机场 1 晚 · ¥354.25 / 人</span>
+            </div>
+            <div class="story-days">
+              <div class="story-day">
+                <div class="story-date"><strong>10.05</strong><span>周一 · DAY 13</span></div>
+                <div class="story-body">
+                  <h4>还车 + 跨塔斯曼海</h4>
+                  <ul class="timeline">
+                    <li class="i-move"><span class="t-time">09:00—12:00</span><span class="t-icon"><i data-lucide="car"></i></span><span class="t-what"><b>凯库拉 → 基督城</b><em>预留加油和还车时间</em></span></li>
+                    <li class="i-move"><span class="t-time">15:45—17:35</span><span class="t-icon"><i data-lucide="plane"></i></span><span class="t-what"><b>基督城 → 墨尔本</b></span></li>
+                    <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿墨尔本机场 Quality Hotel</b><em>已预订 · 4 人 ¥1,417</em></span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="story-day">
+                <div class="story-date"><strong>10.06</strong><span>周二 · DAY 14</span></div>
+                <div class="story-body">
+                  <h4>回家</h4>
+                  <ul class="timeline">
+                    <li class="i-move"><span class="t-time">11:15—17:55</span><span class="t-icon"><i data-lucide="plane"></i></span><span class="t-what"><b>墨尔本 → 香港</b><em>落地即结束，全程 14 天</em></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="story-visual">
+            <figure><img src="assets/melbourne-yarra.jpg" alt="墨尔本亚拉河与天际线" loading="lazy"><figcaption>Donaldytong, CC BY-SA 3.0</figcaption></figure>
+            <p class="visual-caption">墨尔本这一晚只是过夜衔接，住机场酒店而不是市区，是为了第二天 11:15 的航班不用再赶一次交通。如果航班改期，市区往返机场大约 45 分钟。</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ============ PANEL 3 · 费用与预订 ============ -->
+    <section class="panel" id="panel-cost" role="tabpanel" aria-label="费用与预订">
+      <div class="panel-inner">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">Budget &amp; bookings · 钱与硬票</p>
+            <h2>已经花掉的钱，<br>和还没定下来的事</h2>
+          </div>
+          <p class="lead">下面只统计已确认金额，按人均口径换算成人民币。同一项的分摊人数不同（机票 2 人、住宿多为 6 人、墨尔本 4 人），所以「人均」是按各自实际分摊算的，不是简单除以 6。</p>
+        </div>
+
+        <div class="budget-hero">
+          <div class="budget-total">
+            <b>¥26,862</b>
+            <span>单人已确认支出（含国际机票）</span>
+            <p>扣掉机票后为 ¥14,778 / 人。餐饮、油费、停车、零星门票、保险与购物均未计入。</p>
+          </div>
+          <div class="budget-bars">
+            <div class="bar-row bar-transport"><span class="bar-name">交通</span><span class="bar-track"><i style="width:100%"></i></span><span class="bar-value">¥13,750.67 · 51.2%</span></div>
+            <div class="bar-row bar-stay"><span class="bar-name">住宿</span><span class="bar-track"><i style="width:43.1%"></i></span><span class="bar-value">¥5,923.80 · 22.0%</span></div>
+            <div class="bar-row bar-act"><span class="bar-name">体验项目</span><span class="bar-track"><i style="width:43.5%"></i></span><span class="bar-value">¥5,978.80 · 22.3%</span></div>
+            <div class="bar-row bar-visa"><span class="bar-name">签证</span><span class="bar-track"><i style="width:8.8%"></i></span><span class="bar-value">¥1,209.12 · 4.5%</span></div>
+          </div>
+        </div>
+
+        <section class="cost-block">
+          <h3>交通</h3>
+          <p>机票为两人一单，租车为六人分摊；南岛全程自驾约 1,900 公里，油费未含在租车里。</p>
+          <table class="cost-table">
+            <thead><tr><th>项目</th><th>分摊</th><th class="num">总额</th><th class="num">人均</th><th>付款人</th></tr></thead>
+            <tbody>
+              <tr><td>国际及跨塔斯曼机票<br><span style="color:var(--muted)">HKG → SYD → CHC ／ CHC → MEL → HKG</span></td><td>2 人</td><td class="num">¥24,168.00</td><td class="num">¥12,084.00</td><td>阿稻</td></tr>
+              <tr><td>租车（全程，含保险）</td><td>6 人</td><td class="num">¥10,000.00</td><td class="num">¥1,666.67</td><td>卡姐</td></tr>
+            </tbody>
+            <tfoot><tr><td colspan="3">交通小计</td><td class="num">¥13,750.67</td><td>—</td></tr></tfoot>
+          </table>
+        </section>
+
+        <section class="cost-block">
+          <h3>住宿 · 12 晚</h3>
+          <p>全部已预订。基督城和墨尔本是机场过夜，皇后镇连住四晚作为天气缓冲基地。</p>
+          <table class="cost-table">
+            <thead><tr><th>日期</th><th>住处</th><th>晚数 / 分摊</th><th class="num">总额</th><th class="num">人均</th></tr></thead>
+            <tbody>
+              <tr><td>09.24</td><td><span class="dot ok"></span>基督城 Sudima Christchurch Airport</td><td>1 晚 / 2 人</td><td class="num">¥683.89</td><td class="num">¥341.95</td></tr>
+              <tr><td>09.25 — 09.26</td><td><span class="dot ok"></span>但尼丁</td><td>2 晚 / 6 人</td><td class="num">¥3,671.04</td><td class="num">¥611.84</td></tr>
+              <tr><td>09.27 — 09.30</td><td><span class="dot ok"></span>皇后镇</td><td>4 晚 / 6 人</td><td class="num">¥14,400.00</td><td class="num">¥2,400.00</td></tr>
+              <tr><td>10.01</td><td><span class="dot ok"></span>Twizel</td><td>1 晚 / 6 人</td><td class="num">¥2,436.92</td><td class="num">¥406.15</td></tr>
+              <tr><td>10.02</td><td><span class="dot ok"></span>蒂卡波湖</td><td>1 晚 / 6 人</td><td class="num">¥5,600.00</td><td class="num">¥933.33</td></tr>
+              <tr><td>10.03 — 10.04</td><td><span class="dot ok"></span>凯库拉</td><td>2 晚 / 6 人</td><td class="num">¥5,257.68</td><td class="num">¥876.28</td></tr>
+              <tr><td>10.05</td><td><span class="dot ok"></span>墨尔本机场 Quality Hotel</td><td>1 晚 / 4 人</td><td class="num">¥1,417.00</td><td class="num">¥354.25</td></tr>
+            </tbody>
+            <tfoot><tr><td colspan="4">住宿小计</td><td class="num">¥5,923.80</td></tr></tfoot>
+          </table>
+        </section>
+
+        <section class="cost-block">
+          <h3>体验项目</h3>
+          <p>四项已付款、票据已存档；另有两项待预订（Jervois 牛排、天空缆车 Luge）与一项自付（卡德罗纳滑雪）。</p>
+          <table class="cost-table">
+            <thead><tr><th>日期</th><th>项目</th><th>集合点</th><th class="num">人均</th><th>状态</th></tr></thead>
+            <tbody>
+              <tr><td>09.28</td><td>NZONE 跳伞 15,000ft</td><td>35 Shotover Street, Queenstown</td><td class="num">¥1,976.40</td><td><span class="dot ok"></span>已预订</td></tr>
+              <tr><td>09.29</td><td>格林诺奇冰川徒步</td><td>35 Mull Street, Glenorchy</td><td class="num">¥2,800.00</td><td><span class="dot ok"></span>已预订</td></tr>
+              <tr><td>09.30</td><td>Shotover Jet 喷气艇</td><td>3 Arthurs Point Road（需自驾）</td><td class="num">—</td><td><span class="dot ok"></span>已预订</td></tr>
+              <tr><td>09.26</td><td>小企鹅归巢</td><td>1245 Harington Point Road</td><td class="num">—</td><td><span class="dot ok"></span>已预订</td></tr>
+              <tr><td>10.04</td><td>出海海钓（Tomo 船长）</td><td>24 Moa Road 对面码头</td><td class="num">¥536.40</td><td><span class="dot ok"></span>已预订</td></tr>
+              <tr><td>10.04</td><td>观鲸 Whale Watch Kaikoura</td><td>1 Whaleway Station Road</td><td class="num">¥666.00</td><td><span class="dot ok"></span>已预订</td></tr>
+              <tr><td>09.28</td><td>天空缆车 + Luge</td><td>Skyline Gondola Base, 53 Brecon St</td><td class="num">待定</td><td><span class="dot pending"></span>待预订</td></tr>
+              <tr><td>09.27</td><td>Jervois Steak House 牛排</td><td>皇后镇市区</td><td class="num">待定</td><td><span class="dot pending"></span>待订位</td></tr>
+              <tr><td>09.30</td><td>卡德罗纳滑雪（阿韬）</td><td>皇后镇往返班车</td><td class="num">自付</td><td><span class="dot pending"></span>待确认</td></tr>
+            </tbody>
+            <tfoot><tr><td colspan="3">已付款项目小计</td><td class="num">¥5,978.80</td><td>—</td></tr></tfoot>
+          </table>
+        </section>
+
+        <section class="cost-block">
+          <h3>签证与其他</h3>
+          <p>澳洲签证已出（中转停留悉尼、墨尔本需要）；新西兰方向的签证/NZeTA 状态仍待确认。</p>
+          <table class="cost-table">
+            <thead><tr><th>项目</th><th class="num">人均</th><th>状态</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>澳洲签证</td><td class="num">¥1,209.12</td><td><span class="dot ok"></span>已出签</td><td>悉尼一日游 + 墨尔本过夜都需要</td></tr>
+              <tr><td>新西兰签证 / NZeTA</td><td class="num">待确认</td><td><span class="dot pending"></span>进行中</td><td>材料清单见「行前清单」页</td></tr>
+            </tbody>
+            <tfoot><tr><td>签证小计</td><td class="num">¥1,209.12</td><td colspan="2">—</td></tr></tfoot>
+          </table>
+        </section>
+
+        <section class="cost-block">
+          <h3>还没进账本的部分</h3>
+          <p>以下项目按当地现付，建议每人再预留 ¥4,000—6,000 的活动资金：三餐（南岛餐厅普遍偏贵）、汽油与停车、天空缆车 Luge、卡德罗纳滑雪、零星门票与国家公园步道停车、旅行保险，以及毛衣、羊毛制品这类必然发生的购物。</p>
+        </section>
+      </div>
+    </section>
+
+    <!-- ============ PANEL 4 · 南岛预习 ============ -->
+    <section class="panel" id="panel-culture" role="tabpanel" aria-label="南岛预习">
+      <div class="panel-inner">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">Before you go · 南岛预习</p>
+            <h2>出发前值得先知道的<br>六件事</h2>
+          </div>
+          <p class="lead">不是攻略，是这条线上真正会影响体验的常识：季节、路况、暗夜规则和野生动物距离。看完这一页，行程里那些「为什么这样安排」大概就说得通了。</p>
+        </div>
+
+        <div class="culture-grid">
+          <article class="culture-card">
+            <figure class="culture-photo">
+              <img src="assets/twizel-basin.jpg" alt="Twizel 与麦肯奇盆地的湖泊" loading="lazy">
+              <figcaption>Robert Linsdell, CC BY 2.0</figcaption>
+            </figure>
+            <div class="culture-text">
+              <b>Season</b>
+              <h3>南半球的九月底是春天，不是夏天</h3>
+              <p>南岛内陆的九月底刚出冬季：白天可能 12—16 °C，日落后山谷会掉到接近零度，皇冠山脉和林迪斯山口清晨还可能结霜。行李按「三层穿法」准备：速干内层 + 抓绒 + 防风防雨外层，比带一件厚外套更管用。</p>
+            </div>
+          </article>
+
+          <article class="culture-card">
+            <figure class="culture-photo">
+              <img src="assets/queenstown-winter.jpg" alt="冬季的皇后镇与瓦卡蒂普湖" loading="lazy">
+              <figcaption>Bernard Spragg, CC0</figcaption>
+            </figure>
+            <div class="culture-text">
+              <b>Driving</b>
+              <h3>左行右舵，还有大量单车道桥</h3>
+              <p>新西兰靠左行驶、方向盘在右。南岛乡道上单车道桥（one lane bridge）很常见，看清蓝白牌谁有优先权；砂石路（gravel road）必须减速——Rob Roy 步道口和很多观景点都在砂石路尽头，多数租车合同对砂石路损伤是免责的。</p>
+            </div>
+          </article>
+
+          <article class="culture-card">
+            <figure class="culture-photo">
+              <img src="assets/christchurch-gardens.jpg" alt="基督城植物园" loading="lazy">
+              <figcaption>Michal Klajban, CC BY-SA 4.0</figcaption>
+            </figure>
+            <div class="culture-text">
+              <b>Gateway</b>
+              <h3>基督城是起点也是终点</h3>
+              <p>这趟行程两次经过基督城：第一次只在机场旁过夜取车，最后一次是还车赶飞机。中间没有留出市区时间——如果想看重建后的纸板教堂和植物园，最好从最后一天的还车时段里挤，而不是指望第一天早上。</p>
+            </div>
+          </article>
+
+          <article class="culture-card">
+            <figure class="culture-photo">
+              <img src="assets/blue-penguin.jpg" alt="正在下海的小蓝企鹅" loading="lazy">
+              <figcaption>Avenue, CC BY-SA 3.0</figcaption>
+            </figure>
+            <div class="culture-text">
+              <b>Wildlife</b>
+              <h3>小蓝企鹅：不能闪光、不能挡路</h3>
+              <p>小蓝企鹅是世界上最小的企鹅，天黑后成群上岸回巢。观赏区严格禁用闪光灯和手电，也不能站在它们的通道上。Sandfly Bay 的新西兰海狮同理——至少保持 10 米，永远不要挡在它和海之间。</p>
+            </div>
+          </article>
+
+          <article class="culture-card">
+            <figure class="culture-photo">
+              <img src="assets/albatross.jpg" alt="奥塔哥半岛的皇家信天翁" loading="lazy">
+              <figcaption>Andy Witchger, CC BY 2.0</figcaption>
+            </figure>
+            <div class="culture-text">
+              <b>Otago</b>
+              <h3>奥塔哥半岛是一条慢路</h3>
+              <p>从但尼丁到半岛尽头 Taiaroa Head 只有 30 公里，但沿海那条路窄、弯多、限速低，单程要接近一小时。信天翁中心和企鹅归巢都在最尽头，安排在同一个傍晚最省时间——这也是行程把 Tunnel Beach 放在中午的原因。</p>
+            </div>
+          </article>
+
+          <article class="culture-card">
+            <figure class="culture-photo">
+              <img src="assets/tunnel-beach.jpg" alt="Tunnel Beach 的海崖与拱门" loading="lazy">
+              <figcaption>Ingolfson, Public domain</figcaption>
+            </figure>
+            <div class="culture-text">
+              <b>Tides</b>
+              <h3>海崖看潮汐，星空看月相</h3>
+              <p>Tunnel Beach 的隧道和沙滩在高潮位时会被淹，出发前查一次潮汐表；蒂卡波观星则要看月相——满月前后银河会被冲淡，所以那一晚的重点不是「能不能看到」，而是「几点云散」。两件事都建议当天再确认，别提前锁死时间。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PANEL 5 · 行前清单 ============ -->
+    <section class="panel" id="panel-checklist" role="tabpanel" aria-label="行前清单">
+      <div class="panel-inner">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">Ready to go · 出发自检</p>
+            <h2>把重要的事，<br>在出发前逐项划掉</h2>
+          </div>
+          <p class="lead">勾选状态只保存在当前设备浏览器里，不会上传。清单来自《待购买物品》与《签证材料》两张表，共 5 组、80 余项；证件与签证材料排在最前面，因为它们最不可能临时补救。</p>
+        </div>
+
+        <div class="checklist-layout">
+          <aside class="readiness-card">
+            <strong id="readinessPercent">0%</strong>
+            <span id="readinessCopy">还没开始，先从护照和签证材料检查。</span>
+            <div class="progress-track"><i id="readinessBar"></i></div>
+            <small id="readinessCount">0 / 0 项已完成</small>
+          </aside>
+          <div class="check-groups" id="checkGroups"></div>
+        </div>
+      </div>
+
+      <section class="notes">
+        <div class="notes-inner">
+          <p class="section-kicker">Fine print · 最后几句</p>
+          <h2>三件容易被忽略、<br>但会毁掉一天的小事</h2>
+          <p class="notes-lead">这条线的风险不在难度，而在时间衔接和天气：只要有一项被吹掉，后面的连锁反应就会开始。</p>
+          <div class="notes-grid">
+            <div class="note-block">
+              <i data-lucide="cloud-rain"></i>
+              <h3>把天气项集中在皇后镇</h3>
+              <p>跳伞、Luge、喷气艇、滑雪都受天气影响，所以皇后镇连住四晚。真的遇上坏天气，优先保跳伞和冰川徒步——这两项最贵，也最难补。</p>
+            </div>
+            <div class="note-block">
+              <i data-lucide="fuel"></i>
+              <h3>加油站比你想的稀疏</h3>
+              <p>Twizel、蒂卡波、格林诺奇之间的路段服务点很少，油表到一半就该加。蒂卡波到凯库拉那 5 小时是全程最长的一段，出发前一定加满。</p>
+            </div>
+            <div class="note-block">
+              <i data-lucide="shield-check"></i>
+              <h3>入境申报要认真填</h3>
+              <p>新西兰生物安全管制极严：徒步鞋底的泥、任何食物、蜂蜜、种子都要申报，漏报是当场罚款。徒步鞋出发前刷干净，能省掉一次开箱检查。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="credits">
+        <div class="credits-inner">
+          <p>《新西兰南岛旅行计划 · 2026》｜行程数据来自阿稻的飞书多维表格《阿稻的新西兰行程》（行程 / 待购买物品 / 签证材料三张表），页面为公开分享版，不含预订单、票据与个人证件信息。</p>
+          <p class="src">地图底图 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors，交互由 Leaflet 提供。图片均来自 Wikimedia Commons，版权归原作者所有：Krzysztof Golik (CC BY-SA 4.0)、lumoplank (CC0)、Gibrate1 (CC0)、Nick-D (CC BY-SA 4.0)、Michal Klajban (CC BY-SA 4.0)、W. Bulach (CC BY-SA 4.0)、Aleks Dahlberg (CC0)、Ingolfson (PD)、Avenue (CC BY-SA 3.0)、Andy Witchger (CC BY 2.0)、profernity (CC BY 2.0)、Bernard Spragg (CC0 / PD)、AJMANDELL1 (CC BY-SA 4.0)、Steve Collis (CC BY 2.0)、Pseudopanax (CC BY 3.0)、Robert Linsdell (CC BY 2.0)、Jillianalma (CC BY-SA 4.0)、Sky_xe (CC BY-SA 4.0)、Mathijs van den Berg (CC BY-SA 4.0)、Oren Rozen (CC BY-SA 3.0)、Donaldytong (CC BY-SA 3.0)。</p>
+          <p class="src">行程与金额以表格最后一次同步为准（2026-09-18）；标注「待预订 / 待确认」的项目仍可能变化。</p>
+        </div>
+      </footer>
+    </section>
+
+  </main>
+
+  <script src="vendor/leaflet.js"></script>
+  <script src="vendor/lucide.min.js"></script>
+  <script>
+    /* ============ tabs ============ */
+    const tabs = Array.from(document.querySelectorAll('.workspace-tab'));
+    const panels = Array.from(document.querySelectorAll('.panel'));
+    let mapReady = false;
+
+    function activate(panelId) {
+      tabs.forEach((t) => {
+        const on = t.dataset.panel === panelId;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach((p) => p.classList.toggle('is-active', p.id === panelId));
+      if (panelId === 'panel-highlights' && mapReady && window.routeMap) {
+        setTimeout(() => window.routeMap.invalidateSize(), 60);
+      }
+      if (history.replaceState) history.replaceState(null, '', '#' + panelId.replace('panel-', ''));
+    }
+    tabs.forEach((t) => t.addEventListener('click', () => activate(t.dataset.panel)));
+
+    const initialHash = (location.hash || '').replace('#', '');
+    if (initialHash && document.getElementById('panel-' + initialHash)) activate('panel-' + initialHash);
+
+    /* ============ topbar actions ============ */
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    document.getElementById('copyLinkBtn').addEventListener('click', async () => {
+      const label = document.getElementById('copyLinkText');
+      try {
+        await navigator.clipboard.writeText(location.href);
+        label.textContent = '已复制';
+      } catch (e) {
+        label.textContent = location.href;
+      }
+      setTimeout(() => { label.textContent = '复制链接'; }, 1800);
+    });
+
+    /* ============ day rail ============ */
+    const DAYS = [
+      { d: '09.23', w: '三', n: 1, to: 'day-0923', label: '出发' },
+      { d: '09.24', w: '四', n: 2, to: 'day-0923', label: '悉尼' },
+      { d: '09.25', w: '五', n: 3, to: 'day-0925', label: '但尼丁' },
+      { d: '09.26', w: '六', n: 4, to: 'day-0925', label: '半岛' },
+      { d: '09.27', w: '日', n: 5, to: 'day-0927', label: '皇后镇' },
+      { d: '09.28', w: '一', n: 6, to: 'day-0927', label: '跳伞' },
+      { d: '09.29', w: '二', n: 7, to: 'day-0929', label: '冰川' },
+      { d: '09.30', w: '三', n: 8, to: 'day-0929', label: '喷气艇' },
+      { d: '10.01', w: '四', n: 9, to: 'day-1001', label: '瓦纳卡' },
+      { d: '10.02', w: '五', n: 10, to: 'day-1002', label: '库克山' },
+      { d: '10.03', w: '六', n: 11, to: 'day-1002', label: '蒂卡波' },
+      { d: '10.04', w: '日', n: 12, to: 'day-1004', label: '凯库拉' },
+      { d: '10.05', w: '一', n: 13, to: 'day-1005', label: '返程' },
+      { d: '10.06', w: '二', n: 14, to: 'day-1005', label: '到家' }
+    ];
+    const rail = document.getElementById('dayRail');
+    const dailyPanel = document.getElementById('panel-daily');
+    rail.innerHTML = DAYS.map((x) => (
+      '<button type="button" class="day-chip" data-to="' + x.to + '"><b>' + x.d + '</b><span>' + x.label + '</span></button>'
+    )).join('');
+    const chips = Array.from(rail.querySelectorAll('.day-chip'));
+    const railHeight = () => document.querySelector('.day-rail').offsetHeight;
+    chips.forEach((c) => c.addEventListener('click', () => {
+      const target = document.getElementById(c.dataset.to);
+      if (!target) return;
+      dailyPanel.scrollTo({ top: Math.max(0, target.offsetTop - railHeight() + 2), behavior: 'smooth' });
+    }));
+    function syncRail() {
+      const y = dailyPanel.scrollTop + railHeight() + 24;
+      let activeId = chips[0].dataset.to;
+      DAYS.forEach((x) => {
+        const el = document.getElementById(x.to);
+        if (el && el.offsetTop <= y) activeId = x.to;
+      });
+      let marked = false;
+      chips.forEach((c) => {
+        const on = !marked && c.dataset.to === activeId;
+        c.classList.toggle('is-active', c.dataset.to === activeId);
+      });
+      const first = chips.find((c) => c.dataset.to === activeId);
+      if (first) first.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+    dailyPanel.addEventListener('scroll', () => window.requestAnimationFrame(syncRail));
+    syncRail();
+
+    /* ============ route map ============ */
+    const places = {
+      sydney: { coords: [-33.8688, 151.2093], order: 'A', label: 'Sydney · 悉尼', detail: '中转一日游｜海港区 + 邦迪海岸线' },
+      bondi: { coords: [-33.8908, 151.2743], label: 'Bondi Beach', detail: '邦迪—库吉海岸线起点', site: true },
+      coogee: { coords: [-33.9205, 151.2570], label: 'Coogee Beach', detail: '海岸线终点｜打车去机场约 20min', site: true },
+      christchurch: { coords: [-43.5321, 172.6362], order: '1', label: 'Christchurch · 基督城', detail: '南岛门户｜取车与还车｜9/24 与 10/5' },
+      dunedin: { coords: [-45.8788, 170.5028], order: '2', label: 'Dunedin · 但尼丁', detail: '苏格兰之城｜住 2 晚｜9/25—9/26' },
+      sandflybay: { coords: [-45.8990, 170.6350], label: 'Sandfly Bay', detail: '沙丘下切海滩｜新西兰海狮', site: true },
+      tunnelbeach: { coords: [-45.9200, 170.4460], label: 'Tunnel Beach', detail: '海崖与人工隧道｜注意潮汐', site: true },
+      pilotsbeach: { coords: [-45.7760, 170.7290], label: 'Pilots Beach · 小企鹅归巢', detail: 'Taiaroa Head 尽头｜禁闪光灯', site: true },
+      queenstown: { coords: [-45.0312, 168.6626], order: '3', label: 'Queenstown · 皇后镇', detail: '连住 4 晚｜跳伞、缆车、喷气艇｜9/27—9/30' },
+      arrowtown: { coords: [-44.9394, 168.8331], label: 'Arrowtown · 箭镇', detail: '淘金小镇｜Golden Fleece 毛衣', site: true },
+      arthurspoint: { coords: [-44.9760, 168.6790], label: 'Arthurs Point · Shotover Jet', detail: '喷气艇自驾集合点', site: true },
+      glenorchy: { coords: [-44.8712, 168.3859], order: '4', label: 'Glenorchy · 格林诺奇', detail: '冰川徒步集合｜35 Mull Street｜9/29' },
+      cardrona: { coords: [-44.8730, 168.9490], label: 'Cardrona · 卡德罗纳雪场', detail: '9/30 滑雪（单人行程）', site: true },
+      wanaka: { coords: [-44.7032, 169.1321], order: '5', label: 'Wanaka · 瓦纳卡', detail: '神树、湖区小店｜10/1 上午' },
+      robroy: { coords: [-44.5155, 168.7385], label: 'Rob Roy Glacier Track', detail: '悬冰川步道口｜砂石路进入', site: true },
+      twizel: { coords: [-44.2585, 170.1005], order: '6', label: 'Twizel', detail: '麦肯奇盆地小镇｜住 1 晚｜10/1' },
+      mtcook: { coords: [-43.7340, 170.0980], order: '7', label: 'Aoraki / Mount Cook Village', detail: '库克山国家公园｜胡克步道起点｜10/2' },
+      hooker: { coords: [-43.7020, 170.0930], label: 'Hooker Lake', detail: '胡克冰川终端湖｜三座吊桥尽头', site: true },
+      tekapo: { coords: [-44.0049, 170.4790], order: '8', label: 'Lake Tekapo · 蒂卡波', detail: '国际暗夜保护区｜住 1 晚｜10/2' },
+      kaikoura: { coords: [-42.4009, 173.6811], order: '9', label: 'Kaikōura · 凯库拉', detail: '观鲸与海钓｜住 2 晚｜10/3—10/4' },
+      whalearea: { coords: [-42.4600, 173.7800], label: '观鲸海域（示意）', detail: '凯库拉海沟｜抹香鲸常年驻留', site: true },
+      melbourne: { coords: [-37.8136, 144.9631], order: 'B', label: 'Melbourne · 墨尔本', detail: '返程过夜｜机场酒店｜10/5' }
+    };
+
+    const NZ_KEYS = ['christchurch', 'dunedin', 'sandflybay', 'tunnelbeach', 'pilotsbeach', 'queenstown', 'arrowtown', 'arthurspoint', 'glenorchy', 'cardrona', 'wanaka', 'robroy', 'twizel', 'mtcook', 'hooker', 'tekapo', 'kaikoura', 'whalearea'];
+
+    const routes = [
+      { kind: 'flight', name: '悉尼 → 基督城', pts: [places.sydney.coords, places.christchurch.coords] },
+      { kind: 'flight', name: '基督城 → 墨尔本', pts: [places.christchurch.coords, places.melbourne.coords] },
+      { kind: 'walk', name: '邦迪—库吉海岸线徒步', pts: [places.bondi.coords, [-33.9020, 151.2660], places.coogee.coords] },
+      { kind: 'road', name: '基督城 → 但尼丁（4.5h）', pts: [places.christchurch.coords, [-44.3963, 171.2373], [-45.0966, 170.9714], places.dunedin.coords] },
+      { kind: 'road', name: '奥塔哥半岛环线', pts: [places.dunedin.coords, places.sandflybay.coords, places.pilotsbeach.coords] },
+      { kind: 'road', name: 'Tunnel Beach 支线', pts: [places.dunedin.coords, places.tunnelbeach.coords] },
+      { kind: 'road', name: '但尼丁 → 皇后镇（3.5h）', pts: [places.dunedin.coords, [-45.8700, 169.9800], [-45.5400, 169.3200], [-45.0384, 169.1980], places.queenstown.coords] },
+      { kind: 'road', name: '皇后镇 → 箭镇 / Arthurs Point', pts: [places.queenstown.coords, places.arthurspoint.coords, places.arrowtown.coords] },
+      { kind: 'road', name: '皇后镇 → 格林诺奇', pts: [places.queenstown.coords, [-44.9640, 168.4900], places.glenorchy.coords] },
+      { kind: 'road', name: '皇后镇 → 卡德罗纳 → 瓦纳卡', pts: [places.queenstown.coords, [-44.9394, 168.8331], places.cardrona.coords, places.wanaka.coords] },
+      { kind: 'road', name: '瓦纳卡 → Rob Roy 步道口', pts: [places.wanaka.coords, [-44.6100, 168.9200], places.robroy.coords] },
+      { kind: 'road', name: '瓦纳卡 → Twizel（林迪斯山口）', pts: [places.wanaka.coords, [-44.5700, 169.6600], [-44.4870, 169.9700], places.twizel.coords] },
+      { kind: 'road', name: 'Twizel → 库克山（0.5h）', pts: [places.twizel.coords, [-44.1900, 170.1400], places.mtcook.coords] },
+      { kind: 'walk', name: '胡克谷步道', pts: [places.mtcook.coords, places.hooker.coords] },
+      { kind: 'road', name: '库克山 → 蒂卡波', pts: [places.mtcook.coords, [-44.1900, 170.1400], places.twizel.coords, places.tekapo.coords] },
+      { kind: 'road', name: '蒂卡波 → 凯库拉（5h）', pts: [places.tekapo.coords, [-44.0980, 170.8290], [-43.7900, 171.6800], places.christchurch.coords, [-42.9000, 173.2700], places.kaikoura.coords] },
+      { kind: 'road', name: '凯库拉 → 基督城（3h）', pts: [places.kaikoura.coords, [-42.9000, 173.2700], places.christchurch.coords] },
+      { kind: 'boat', name: '出海观鲸 / 海钓', pts: [places.kaikoura.coords, places.whalearea.coords] }
+    ];
+
+    const STYLES = {
+      flight: { color: '#2f5e8d', weight: 2.4, dashArray: '8 7', opacity: .9 },
+      road: { color: '#b37917', weight: 3, opacity: .9 },
+      walk: { color: '#2d6a43', weight: 3, opacity: .95 },
+      boat: { color: '#17716e', weight: 2.6, dashArray: '2 6', opacity: .95 }
+    };
+
+    const routeMapElement = document.getElementById('routeMap');
+    if (routeMapElement && window.L) {
+      const routeMap = L.map(routeMapElement, { zoomControl: true, scrollWheelZoom: false });
+      window.routeMap = routeMap;
+      mapReady = true;
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(routeMap);
+      L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(routeMap);
+
+      routes.forEach((seg) => {
+        L.polyline(seg.pts, STYLES[seg.kind]).addTo(routeMap).bindTooltip(seg.name, { sticky: true, className: 'route-tooltip' });
+      });
+
+      const markerIcon = (place) => L.divIcon({
+        className: '',
+        html: '<span class="route-marker' + (place.site ? ' site' : '') + '">' + (place.order || '') + '</span>',
+        iconSize: place.site ? [20, 20] : [30, 30],
+        iconAnchor: place.site ? [10, 10] : [15, 15],
+        popupAnchor: [0, place.site ? -10 : -15]
+      });
+
+      Object.values(places).forEach((place) => {
+        const marker = L.marker(place.coords, { icon: markerIcon(place), zIndexOffset: place.site ? 400 : 500 }).addTo(routeMap);
+        marker.bindPopup('<strong>' + place.label + '</strong><span>' + place.detail + '<br>' + place.coords[0].toFixed(5) + ', ' + place.coords[1].toFixed(5) + '</span>');
+        marker.bindTooltip(place.label, { direction: 'top', offset: [0, place.site ? -12 : -18], className: 'route-tooltip' });
+      });
+
+      routeMap.fitBounds(L.latLngBounds(NZ_KEYS.map((k) => places[k].coords)), { padding: [34, 34] });
+    }
+
+    /* ============ checklist ============ */
+    const CHECKLIST = [
+      {
+        name: '证件与保险', icon: 'badge-check', items: [
+          ['护照', '', true],
+          ['签证文件（打印一份）', '', false],
+          ['护照复印件', '以防丢失', false],
+          ['身份证', '', true],
+          ['银行卡', 'Visa 芯片卡；磁条卡记得把背后 CVC 码贴住', false],
+          ['现金', '一人一周约 ¥2,000 等值', false],
+          ['旅游保险', '待下单', false]
+        ]
+      },
+      {
+        name: '澳洲签证材料（已备档）', icon: 'file-check', items: [
+          ['在职证明（必须）', 'Evidence of current employment', true],
+          ['营业执照（非必须）', '有则加分', true],
+          ['54 表', '官网下载模板填写', true],
+          ['户口本扫描', 'Family register', true],
+          ['护照内所有出行记录页', 'Previous travel', true],
+          ['旧护照内记录（如有）', '', true],
+          ['身份证正反面', 'National Identity Document', true],
+          ['护照首页', '必须用 jpg / png，pdf 上传不了', true],
+          ['同行人名单（姓名 + 生日）', 'Group tour details', true],
+          ['行程单', 'Group tour details / itinerary', true],
+          ['工资卡流水', '不消费的卡建议再补一张常用卡', true],
+          ['纳税证明', '个税 App 里开', true],
+          ['资产证明', '理财 / 存款证明', true],
+          ['解释信', '资金情况复杂时需要', true],
+          ['结婚证', '', true]
+        ]
+      },
+      {
+        name: '衣服（三层穿法）', icon: 'shirt', items: [
+          ['冲锋衣 ×2', '已下单', false],
+          ['冲锋裤', '已购买', true],
+          ['抓绒', '已购买', true],
+          ['羽绒', '已购买', true],
+          ['羊毛速干衣', '待下单', false],
+          ['手套', '已购买', true],
+          ['暖帽 ×2', '已下单', false],
+          ['鸭舌帽', '已购买', true],
+          ['防晒帽', '已购买', true],
+          ['防风墨镜 / 墨镜', '已购买', true]
+        ]
+      },
+      {
+        name: '摄影器材', icon: 'camera', items: [
+          ['相机 + 挂机镜头', '已购买', true],
+          ['星空镜头', '已下单 · 蒂卡波要用', false],
+          ['三脚架', '已购买 · 观星必备', true],
+          ['电池（多备）', '已购买', true],
+          ['内存卡包', '已购买', true],
+          ['Pocket 云台相机', '已购买', true],
+          ['Action 运动相机', '已购买', true],
+          ['Action 挂脖 / 自拍杆', '已购买', true],
+          ['麦克风', '已购买', true],
+          ['洗镜头（清洁套装）', '待下单', false]
+        ]
+      },
+      {
+        name: '坐飞机的随身包', icon: 'plane', items: [
+          ['U 型枕', '已下单', false],
+          ['眼罩', '', false],
+          ['耳塞', '', false],
+          ['便携牙刷 + 牙膏', '', false],
+          ['压缩洗脸巾', '', false],
+          ['纸巾', '', false],
+          ['一次性拖鞋', '', false],
+          ['拖鞋', '', false],
+          ['梅片', '缓解干燥与恶心', false],
+          ['华夫饼（顶饱的零食）', '', false],
+          ['下载好电影', '', false],
+          ['晕车贴', '标记为不需要', false]
+        ]
+      },
+      {
+        name: '生活用品', icon: 'backpack', items: [
+          ['转换插头', '新西兰 / 澳洲同为 I 型三扁插', false],
+          ['充电宝', '已购买', true],
+          ['排插', '已购买', true],
+          ['小水壶', '已购买', true],
+          ['毛巾', '已购买', true],
+          ['收纳袋', '已购买', true],
+          ['雨伞', '已购买', true],
+          ['洗发露 / 洗面奶', '已购买', true],
+          ['剃须刀', '已购买', true],
+          ['口罩', '', false],
+          ['一次性内裤 / 袜子', '', false],
+          ['电话卡', '标记为不需要（用漫游或 eSIM）', false]
+        ]
+      },
+      {
+        name: '药品', icon: 'pill', items: [
+          ['布洛芬', '止痛退烧', false],
+          ['阿莫西林', '', false],
+          ['诺氟沙星', '', false],
+          ['蒙脱石散', '腹泻', false],
+          ['整肠丸', '', false],
+          ['开瑞坦', '过敏', false],
+          ['牛黄（解毒片）', '', false],
+          ['维 C', '', false],
+          ['晕船药', '凯库拉两趟出海用', false]
+        ]
+      }
+    ];
+
+    const STORE_KEY = 'nz2026-checklist-v1';
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (e) { saved = {}; }
+
+    const groupsEl = document.getElementById('checkGroups');
+    groupsEl.innerHTML = CHECKLIST.map((g, gi) => {
+      const items = g.items.map((it, ii) => {
+        const id = 'c-' + gi + '-' + ii;
+        const def = it[2] === true;
+        const on = Object.prototype.hasOwnProperty.call(saved, id) ? !!saved[id] : def;
+        return '<label class="check-item' + (on ? ' is-done' : '') + '" for="' + id + '">' +
+          '<input type="checkbox" id="' + id + '" data-key="' + id + '"' + (on ? ' checked' : '') + '>' +
+          '<span><span class="ci-name">' + it[0] + '</span>' + (it[1] ? '<span class="ci-note">' + it[1] + '</span>' : '') + '</span>' +
+          '</label>';
+      }).join('');
+      return '<section class="check-group"><h3><i data-lucide="' + g.icon + '"></i>' + g.name + '<em>' + g.items.length + ' 项</em></h3><div class="check-items">' + items + '</div></section>';
+    }).join('');
+
+    const boxes = Array.from(groupsEl.querySelectorAll('input[type=checkbox]'));
+    const pctEl = document.getElementById('readinessPercent');
+    const copyEl = document.getElementById('readinessCopy');
+    const barEl = document.getElementById('readinessBar');
+    const cntEl = document.getElementById('readinessCount');
+
+    function refresh() {
+      const done = boxes.filter((b) => b.checked).length;
+      const pct = Math.round((done / boxes.length) * 100);
+      pctEl.textContent = pct + '%';
+      barEl.style.width = pct + '%';
+      cntEl.textContent = done + ' / ' + boxes.length + ' 项已完成';
+      copyEl.textContent = pct === 100
+        ? '全部搞定，可以安心出发了。'
+        : pct >= 80 ? '差不多了，把待下单的几件收尾。'
+        : pct >= 50 ? '过半了，重点看衣服和摄影器材。'
+        : pct >= 20 ? '证件先过一遍，其他慢慢补。'
+        : '还没开始，先从护照和签证材料检查。';
+    }
+    boxes.forEach((b) => b.addEventListener('change', () => {
+      b.closest('.check-item').classList.toggle('is-done', b.checked);
+      saved[b.dataset.key] = b.checked;
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch (e) {}
+      refresh();
+    }));
+    refresh();
+
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
