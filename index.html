@@ -944,7 +944,7 @@
             <div class="story-meta">
               <span><i data-lucide="calendar"></i>09.27 — 09.28</span>
               <span><i data-lucide="car"></i>但尼丁 → 皇后镇 · 自驾 3.5h</span>
-              <span><i data-lucide="parachute"></i>NZONE 15,000ft · ¥1,976 / 人</span>
+              <span><i data-lucide="wind"></i>NZONE 15,000ft · ¥1,976 / 人</span>
               <span><i data-lucide="bed-double"></i>皇后镇 4 晚 · ¥2,400 / 人</span>
             </div>
             <div class="story-days">
@@ -1514,11 +1514,7 @@
         const el = document.getElementById(x.to);
         if (el && el.offsetTop <= y) activeId = x.to;
       });
-      let marked = false;
-      chips.forEach((c) => {
-        const on = !marked && c.dataset.to === activeId;
-        c.classList.toggle('is-active', c.dataset.to === activeId);
-      });
+      chips.forEach((c) => c.classList.toggle('is-active', c.dataset.to === activeId));
       const first = chips.find((c) => c.dataset.to === activeId);
       if (first) first.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
