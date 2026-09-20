@@ -454,7 +454,7 @@
     .story-meta svg { width: 13px; height: 13px; color: var(--ink); }
 
     .story-days { margin-top: 22px; display: grid; gap: 20px; }
-    .story-day { display: grid; grid-template-columns: 68px minmax(0, 1fr); gap: 14px; }
+    .story-day { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 14px; }
     .story-date { padding-top: 2px; }
     .story-date strong { display: block; font-size: 22px; font-weight: 900; letter-spacing: -.8px; }
     .story-date span { color: var(--muted); font-size: 10.5px; letter-spacing: .6px; }
@@ -542,6 +542,7 @@
     .dot { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 999px; vertical-align: 1px; }
     .dot.ok { background: var(--green); }
     .dot.pending { background: var(--gold); }
+    .dot.warn { background: var(--red); }
 
     /* ---------- culture / prep grid ---------- */
     .culture-grid { margin-top: 26px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
@@ -646,7 +647,7 @@
       .check-items { grid-template-columns: 1fr; }
       .check-items .check-item:nth-child(odd) { border-right: 0; }
       .notes-grid { grid-template-columns: 1fr; }
-      .story-day { grid-template-columns: 54px minmax(0, 1fr); gap: 11px; }
+      .story-day { grid-template-columns: 70px minmax(0, 1fr); gap: 11px; }
       .story-date strong { font-size: 19px; }
       .timeline li { grid-template-columns: 72px 16px minmax(0, 1fr); }
       #routeMap { height: 400px; }
@@ -657,6 +658,208 @@
     }
 
     /* ---------- print ---------- */
+    /* ============ 天气 ============ */
+    .weather-board { width: min(calc(100% - 32px), var(--max)); margin: 26px auto 0; }
+    .weather-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .weather-head h3 { margin: 4px 0 0; font-size: 20px; font-weight: 900; letter-spacing: -.2px; }
+    .weather-head p { margin: 6px 0 0; max-width: 56ch; color: var(--muted); font-size: 12.5px; line-height: 1.7; }
+    .wx-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .wx-state i { width: 13px; height: 13px; }
+    .wx-state.is-live { border-color: rgba(45, 106, 67, .4); background: rgba(45, 106, 67, .09); color: var(--green); }
+    .wx-state.is-offline { border-color: rgba(169, 39, 39, .35); background: rgba(169, 39, 39, .07); color: var(--red); }
+    .wx-strip {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(138px, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+      padding-bottom: 10px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+    }
+    .wx-card {
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      padding: 12px 12px 13px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--ink);
+      border-radius: 4px;
+      background: var(--paper);
+    }
+    .wx-card.is-climo { border-top-color: var(--gold); background: #fdfbf6; }
+    .wx-card.is-alert { border-top-color: var(--red); }
+    .wx-date { display: flex; align-items: baseline; gap: 6px; }
+    .wx-date b { font-size: 16px; font-weight: 900; }
+    .wx-date span { color: var(--muted); font-size: 10.5px; font-weight: 700; }
+    .wx-place { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11.5px; font-weight: 700; }
+    .wx-place i { width: 12px; height: 12px; }
+    .wx-main { display: flex; align-items: center; gap: 9px; }
+    .wx-main i { width: 26px; height: 26px; stroke-width: 1.7; color: var(--blue); }
+    .wx-temp { font-size: 19px; font-weight: 900; letter-spacing: -.4px; }
+    .wx-temp em { color: var(--muted); font-size: 13px; font-style: normal; font-weight: 700; }
+    .wx-sky { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+    .wx-facts { display: flex; flex-wrap: wrap; gap: 4px 10px; color: var(--muted); font-size: 11px; }
+    .wx-facts b { color: var(--ink); font-weight: 800; }
+    .wx-tag {
+      align-self: flex-start;
+      margin-top: 1px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
+    .wx-card.is-climo .wx-tag { background: rgba(179, 121, 23, .14); color: var(--gold); }
+    .wx-note { margin: 4px 0 0; color: var(--muted); font-size: 11.5px; line-height: 1.75; }
+    .wx-alerts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .wx-alert {
+      display: flex;
+      gap: 9px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--red);
+      border-radius: 3px;
+      background: var(--surface);
+    }
+    .wx-alert i { flex: none; width: 15px; height: 15px; margin-top: 2px; color: var(--red); }
+    .wx-alert b { display: block; font-size: 12.5px; font-weight: 800; }
+    .wx-alert span { display: block; margin-top: 3px; color: var(--muted); font-size: 11.5px; line-height: 1.65; }
+    .day-weather {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 7px;
+      padding: 2px 5px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: help;
+    }
+    .day-weather i { width: 11px; height: 11px; color: var(--blue); }
+    .day-weather b { color: var(--ink); font-weight: 800; }
+    .day-weather.is-climo { border-color: rgba(179, 121, 23, .4); background: rgba(179, 121, 23, .08); }
+    .day-weather.is-climo i { color: var(--gold); }
+    .wx-alt { margin-left: 4px; color: var(--muted); font-weight: 700; }
+    .wx-facts span { display: inline-flex; align-items: center; }
+    .chip-wx { display: block; margin-top: 2px; font-size: 9.5px; font-style: normal; letter-spacing: 0; opacity: .85; }
+    .day-chip { min-width: 84px; }
+
+    /* ============ 预习：阅读库 ============ */
+    .prep-lede {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr);
+      gap: 26px;
+      margin: 26px 0 8px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .prep-lede h3 { margin: 0 0 10px; font-size: 21px; font-weight: 900; }
+    .prep-lede p { margin: 0 0 11px; font-size: 14px; line-height: 1.85; }
+    .prep-lede .src { color: var(--muted); font-size: 11.5px; line-height: 1.7; }
+    .prep-jump { display: flex; flex-wrap: wrap; gap: 8px; align-content: start; }
+    .prep-jump a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .prep-jump a:hover { background: var(--ink); color: #fff; }
+    .prep-jump a i { width: 13px; height: 13px; }
+    .shelf { margin-top: 34px; scroll-margin-top: 18px; }
+    .shelf-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
+    .shelf-head h3 { margin: 4px 0 0; font-size: 21px; font-weight: 900; }
+    .shelf-head h3 small { display: block; margin-top: 4px; color: var(--muted); font-size: 11.5px; font-weight: 700; letter-spacing: .6px; }
+    .shelf-head p { margin: 0; max-width: 52ch; color: var(--muted); font-size: 12.5px; line-height: 1.75; }
+    .read-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px; margin-top: 16px; }
+    .read-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 15px 16px 16px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .rc-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .rc-num { font-size: 11px; font-weight: 900; color: var(--red); letter-spacing: 1px; }
+    .rc-kind { padding: 2px 7px; border-radius: 3px; background: var(--surface); color: var(--muted); font-size: 10.5px; font-weight: 800; }
+    .rc-kind.paper { background: rgba(47, 94, 141, .1); color: var(--blue); }
+    .rc-kind.official { background: rgba(23, 113, 110, .1); color: var(--teal); }
+    .rc-kind.story { background: rgba(179, 121, 23, .13); color: var(--gold); }
+    .read-card h4 { margin: 0; font-size: 15px; font-weight: 900; line-height: 1.45; }
+    .read-card h4 a { color: var(--ink); text-decoration: none; border-bottom: 2px solid rgba(169, 39, 39, .3); }
+    .read-card h4 a:hover { border-bottom-color: var(--red); color: var(--red); }
+    .rc-src { color: var(--muted); font-size: 11.5px; font-weight: 700; }
+    .rc-deck { margin: 0; font-size: 13px; line-height: 1.8; }
+    .rc-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; color: var(--muted); font-size: 11px; }
+    .rc-foot span { display: inline-flex; align-items: center; gap: 4px; }
+    .rc-foot i { width: 12px; height: 12px; }
+    .rc-foot .rc-day { color: var(--ink); font-weight: 800; }
+    .prep-block { margin-top: 22px; padding: 18px 20px 20px; border: 1px solid var(--line); border-left: 3px solid var(--teal); border-radius: 4px; background: var(--surface); }
+    .prep-block h4 { margin: 0 0 12px; font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 7px; }
+    .prep-block h4 i { width: 15px; height: 15px; color: var(--teal); }
+    .rule-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+    .rule-list li { display: flex; gap: 9px; font-size: 13px; line-height: 1.75; }
+    .rule-list li::before { content: ''; flex: none; width: 6px; height: 6px; margin-top: 8px; border-radius: 50%; background: var(--teal); }
+    .rule-list b { font-weight: 800; }
+    .rule-list cite { color: var(--muted); font-size: 11px; font-style: normal; }
+    .species-table { width: 100%; margin-top: 4px; border-collapse: collapse; font-size: 12.5px; }
+    .species-table th, .species-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .species-table th { background: var(--paper); font-size: 11px; font-weight: 800; letter-spacing: .6px; color: var(--muted); }
+    .species-table td b { font-weight: 800; }
+    .species-table td em { color: var(--muted); font-style: italic; }
+    .species-wrap { overflow-x: auto; }
+    .keyword-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 12px; margin-top: 16px; }
+    .keyword-card { padding: 14px 15px; border: 1px solid var(--line); border-top: 3px solid var(--teal); border-radius: 4px; background: var(--paper); }
+    .keyword-card b { display: block; font-size: 14px; font-weight: 900; }
+    .keyword-card i.kw-sub { display: block; margin: 2px 0 7px; color: var(--muted); font-size: 11px; font-style: normal; font-weight: 700; letter-spacing: .4px; }
+    .keyword-card p { margin: 0; font-size: 12.5px; line-height: 1.75; color: var(--ink); }
+    .keyword-card cite { display: block; margin-top: 7px; color: var(--muted); font-size: 10.5px; font-style: normal; }
+
+    @media (max-width: 900px) {
+      .prep-lede { grid-template-columns: 1fr; gap: 18px; }
+    }
+
     @media print {
       body { overflow: visible; }
       .topbar, .day-rail { display: none !important; }
@@ -810,9 +1013,9 @@
                 <figcaption>Sperm whale near Kaikoura／M. van den Berg, CC BY-SA 4.0</figcaption>
               </figure>
               <div class="highlight-body">
-                <h3>凯库拉观鲸 + 出海海钓</h3>
-                <p>凯库拉海沟离岸极近，抹香鲸常年驻留。观鲸之外还约了 Tomo 船长的海钓，9 月起才恢复营业，10 月前不能钓龙虾。两个项目分两天，留出晕船缓冲。</p>
-                <div class="highlight-tags"><span class="tag ok">均已预订</span><span class="tag cost">¥666 + ¥536</span><span class="tag">10.04</span></div>
+                <h3>凯库拉观鲸（上午留白）</h3>
+                <p>凯库拉海沟离岸极近，抹香鲸常年驻留。下午出海观鲸已预订；上午最近改成小镇慢逛，有精力再加皮划艇追海豚。原来约的 Tomo 船长海钓预订单还留着，待最终确认。</p>
+                <div class="highlight-tags"><span class="tag ok">观鲸已预订</span><span class="tag cost">¥666 / 人</span><span class="tag">10.04</span></div>
               </div>
             </article>
 
@@ -838,6 +1041,20 @@
       <div class="day-rail">
         <div class="day-rail-inner" id="dayRail"></div>
       </div>
+
+      <section class="weather-board" aria-label="行程天气">
+        <div class="weather-head">
+          <div>
+            <p class="section-kicker">Weather · 行程天气</p>
+            <h3>14 天逐日天气</h3>
+            <p>每天取当日主要停留地的数据。打开页面时会自动联网刷新最新预报；超出预报范围的日期，用 2015–2025 年同日的历史平均值兜底。数据来源 Open-Meteo（ECMWF / ERA5）。</p>
+          </div>
+          <span class="wx-state" id="wxState"><i data-lucide="loader"></i>正在获取最新预报…</span>
+        </div>
+        <div class="wx-strip" id="wxStrip"></div>
+        <p class="wx-note" id="wxNote"></p>
+        <div class="wx-alerts" id="wxAlerts"></div>
+      </section>
 
       <section class="story" id="day-0923">
         <div class="story-layout">
@@ -1125,11 +1342,11 @@
         <div class="story-layout">
           <div class="story-copy">
             <p class="chapter-number">Chapter 07</p>
-            <h2>凯库拉：<br>一天出两次海</h2>
-            <p class="story-deck">凯库拉海沟离岸只有几公里，深水把抹香鲸、海豚和信天翁都带到了岸边。上午跟 Tomo 船长出海钓鱼（9 月起才恢复营业，10 月前不能钓龙虾），下午换船去看鲸。两趟之间留了四个多小时，给晕船和补觉。</p>
+            <h2>凯库拉：<br>上午留白，下午看鲸</h2>
+            <p class="story-deck">凯库拉海沟离岸只有几公里，深水把抹香鲸、海豚和信天翁都带到了岸边。上午的安排最近改宽松了：先在小镇慢慢逛，有精力再加一趟皮划艇追海豚；下午才是正事——出海观鲸。原来约的 Tomo 船长海钓预订单还留在表里，出发前确认一下要不要留着。</p>
             <div class="story-meta">
               <span><i data-lucide="calendar"></i>10.04</span>
-              <span><i data-lucide="fish"></i>Tomo 船长海钓 · ¥536.4 / 人</span>
+              <span><i data-lucide="footprints"></i>小镇 citywalk · 可加皮划艇追海豚</span>
               <span><i data-lucide="waves"></i>Whale Watch Kaikoura · ¥666 / 人</span>
               <span><i data-lucide="bed-double"></i>凯库拉（续住）</span>
             </div>
@@ -1137,9 +1354,9 @@
               <div class="story-day">
                 <div class="story-date"><strong>10.04</strong><span>周日 · DAY 12</span></div>
                 <div class="story-body">
-                  <h4>海钓 + 观鲸</h4>
+                  <h4>小镇 + 观鲸</h4>
                   <ul class="timeline">
-                    <li class="i-act"><span class="t-time">09:10—11:00</span><span class="t-icon"><i data-lucide="fish"></i></span><span class="t-what"><b>出海海钓</b><em>码头在 24 Moa Road 对面（across the road at the waters edge）· 已预订 · ¥536.4 / 人</em></span></li>
+                    <li class="i-act"><span class="t-time">09:10—11:00</span><span class="t-icon"><i data-lucide="footprints"></i></span><span class="t-what"><b>凯库拉小镇逛逛</b><em>有精力的话，可以去皮划艇追海豚（暗色斑纹海豚常在近岸成群出现）· Tomo 船长海钓预订单仍在表里，¥536.4 / 人，待最终确认</em></span></li>
                     <li class="i-food"><span class="t-time">午间</span><span class="t-icon"><i data-lucide="utensils"></i></span><span class="t-what"><b>吃小龙虾 / 休息</b><em>凯库拉在毛利语里就是「吃龙虾的地方」</em></span></li>
                     <li class="i-act"><span class="t-time">15:30—18:00</span><span class="t-icon"><i data-lucide="waves"></i></span><span class="t-what"><b>观鲸 Whale Watch Kaikoura</b><em>集合点 1 Whaleway Station Road · 已预订 · ¥666 / 人；风浪过大会取消并退款</em></span></li>
                     <li class="i-stay"><span class="t-time">当晚</span><span class="t-icon"><i data-lucide="bed-double"></i></span><span class="t-what"><b>宿凯库拉</b><em>已预订</em></span></li>
@@ -1151,7 +1368,7 @@
           <div class="story-visual duo">
             <figure><img src="assets/kaikoura-coast.jpg" alt="凯库拉的海岸与雪山" loading="lazy"><figcaption>Kaikoura coast, CC BY-SA 2.0</figcaption></figure>
             <figure><img src="assets/kaikoura-seal.jpg" alt="凯库拉岸边的新西兰海狗" loading="lazy"><figcaption>Oren Rozen, CC BY-SA 3.0</figcaption></figure>
-            <p class="visual-caption">凯库拉是全程唯一「雪山直接压在海面上」的地方。两趟出海都受海况影响，观鲸公司会在开船前几小时通知；提前备好晕船药，比临时买有用。</p>
+            <p class="visual-caption">凯库拉是全程唯一「雪山直接压在海面上」的地方。出海受海况影响，观鲸公司会在开船前几小时通知；提前备好晕船药，比临时买有用。</p>
           </div>
         </div>
       </section>
@@ -1265,7 +1482,7 @@
               <tr><td>09.29</td><td>格林诺奇冰川徒步</td><td>35 Mull Street, Glenorchy</td><td class="num">¥2,800.00</td><td><span class="dot ok"></span>已预订</td></tr>
               <tr><td>09.30</td><td>Shotover Jet 喷气艇</td><td>3 Arthurs Point Road（需自驾）</td><td class="num">—</td><td><span class="dot ok"></span>已预订</td></tr>
               <tr><td>09.26</td><td>小企鹅归巢</td><td>1245 Harington Point Road</td><td class="num">—</td><td><span class="dot ok"></span>已预订</td></tr>
-              <tr><td>10.04</td><td>出海海钓（Tomo 船长）</td><td>24 Moa Road 对面码头</td><td class="num">¥536.40</td><td><span class="dot ok"></span>已预订</td></tr>
+              <tr><td>10.04</td><td>Tomo 船长海钓（改小镇逛逛后待定）</td><td>24 Moa Road 对面码头</td><td class="num">¥536.40</td><td><span class="dot warn"></span>预订单在，待确认</td></tr>
               <tr><td>10.04</td><td>观鲸 Whale Watch Kaikoura</td><td>1 Whaleway Station Road</td><td class="num">¥666.00</td><td><span class="dot ok"></span>已预订</td></tr>
               <tr><td>09.28</td><td>天空缆车 + Luge</td><td>Skyline Gondola Base, 53 Brecon St</td><td class="num">待定</td><td><span class="dot pending"></span>待预订</td></tr>
               <tr><td>09.27</td><td>Jervois Steak House 牛排</td><td>皇后镇市区</td><td class="num">待定</td><td><span class="dot pending"></span>待订位</td></tr>
@@ -1301,10 +1518,35 @@
         <div class="panel-heading">
           <div>
             <p class="section-kicker">Before you go · 南岛预习</p>
-            <h2>出发前值得先知道的<br>六件事</h2>
+            <h2>先读懂这座岛，<br>再上路</h2>
           </div>
-          <p class="lead">不是攻略，是这条线上真正会影响体验的常识：季节、路况、暗夜规则和野生动物距离。看完这一页，行程里那些「为什么这样安排」大概就说得通了。</p>
+          <p class="lead">这一页分两层：上面是这条线上真正会影响体验的实用常识；下面是一个小书架——地质、动物、人文各一架，26 篇来自 GNS Science、DOC、NIWA、NASA、Te Ara、Waitangi Tribunal、NZ Geographic 与同行评审期刊的文章，都标了阅读时长和对应哪一天。长途车程里听读最合适。</p>
         </div>
+
+        <div class="prep-lede">
+          <div>
+            <h3>地质速览：为什么湖水是那种青绿</h3>
+            <p>南岛的骨架来自一次仍在进行的碰撞：太平洋板块与澳洲板块在阿尔卑斯断层斜向挤压，过去 1200 万年把南阿尔卑斯抬升了约 20 公里，而最高峰今天只有 3724 米——被抬起的岩体几乎同步被侵蚀掉（GNS Science）。侵蚀的主力是冰：2.2 万–1.6 万年前，塔斯曼冰川与 Murchison、Hooker、Mueller 冰流合并，曾延伸约 115 公里，把谷地刨成 U 型，退却时留下一道道冰碛垄。麦肯齐盆地至少保留四次冰进的痕迹，蒂卡波湖被约 1.2 万–1.4 万年前的冰碛拦住，长约 30 公里、深约 120 米（DOC）。</p>
+            <p>冰川磨蚀基岩产出极细的岩粉，随融水下山：Godley 河把三条冰川的岩粉送进蒂卡波湖，塔斯曼河把塔斯曼与胡克冰川的岩粉送进普卡基湖。颗粒太细、长期悬浮不沉，优先散射蓝绿光——于是湖水呈现那种不像天然色的青绿（NASA Earth Observatory）。而冰川本身仍在后退：塔斯曼冰川 1990–2015 年退缩约 4.5 公里，主要靠冰舌在自生冰前湖中崩解；1962–2018 年新西兰冰川损失约 38% 体积（Te Ara）。你看到的每一片浮冰、每一道青绿，都是这条链条的当下截面。</p>
+            <p class="src">数字来源：GNS Science、DOC、NASA Earth Observatory、Te Ara: The Encyclopedia of New Zealand。各条出处见下方书架。</p>
+          </div>
+          <div class="prep-jump">
+            <a href="#shelf-basics"><i data-lucide="compass"></i>实用常识</a>
+            <a href="#shelf-geo"><i data-lucide="mountain-snow"></i>地理与地质 9 篇</a>
+            <a href="#shelf-wild"><i data-lucide="bird"></i>动物与生态 9 篇</a>
+            <a href="#shelf-human"><i data-lucide="landmark"></i>人文与社会 11 篇</a>
+          </div>
+        </div>
+
+        <section class="shelf" id="shelf-basics">
+          <div class="shelf-head">
+            <div>
+              <p class="section-kicker">Practical · 实用常识</p>
+              <h3>出发前值得先知道的六件事<small>季节 · 路况 · 暗夜 · 距离</small></h3>
+            </div>
+            <p>不是攻略，是这条线上真正会影响体验的常识。看完这六张卡，行程里那些「为什么这样安排」大概就说得通了。</p>
+          </div>
+        </section>
 
         <div class="culture-grid">
           <article class="culture-card">
@@ -1379,6 +1621,325 @@
             </div>
           </article>
         </div>
+
+        <section class="shelf" id="shelf-geo">
+          <div class="shelf-head">
+            <div>
+              <p class="section-kicker">Reading 01 · Geography &amp; Geology</p>
+              <h3>地理与地质<small>9 篇 · 约 105 分钟</small></h3>
+            </div>
+            <p>一条因果链：板块碰撞 → 山脉隆升 → 冰川侵蚀 → 岩粉入湖 → 青绿湖水；再加上凯库拉的海底峡谷和麦肯齐盆地的暗夜。读完这一架，路上每个观景台都能自己讲解。</p>
+          </div>
+          <div class="read-list">
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">01</span><span class="rc-kind official">官方科普</span></div>
+              <h4><a href="https://www.gns.cri.nz/our-science/land-and-marine-geoscience/earth-dynamics/alpine-fault/" target="_blank" rel="noopener">Alpine Fault</a></h4>
+              <p class="rc-src">GNS Science / Earth Sciences New Zealand</p>
+              <p class="rc-deck">阿尔卑斯断层是太平洋板块与澳洲板块在南岛的陆上边界，历史上每次破裂的震级约 M8.0。过去 1200 万年间南阿尔卑斯被抬升约 20 公里，而山体只有约 3.7 公里高——隆升被侵蚀几乎同步削平。这解释了为什么这条山脉「又新又碎」，滑坡与冰川碎屑量惊人。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>8 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.28—10.03 全程贴断层东侧</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">02</span><span class="rc-kind official">官方情景建模</span></div>
+              <h4><a href="https://www.af8.org.nz/" target="_blank" rel="noopener">AF8：Alpine Fault magnitude 8</a></h4>
+              <p class="rc-src">AF8 计划官方站（含 <a href="https://www.af8.org.nz/faqs" target="_blank" rel="noopener">FAQ</a>）</p>
+              <p class="rc-deck">以「最可信情景」为基础的跨区域应急计划：研究显示未来 50 年阿尔卑斯断层发生地震的概率约 75%，其中约五分之四的可能是 M8 以上，情景假设破裂从南韦斯特兰起、向北拉链式扩展。FAQ 页写了自驾者该准备什么——这是全程唯一真正需要放进车里的预案。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>10 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>自驾预案 · 09.28 起进山</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">03</span><span class="rc-kind story">卫星影像解读</span></div>
+              <h4><a href="https://www.earthobservatory.nasa.gov/images/89901/tasman-glacier-retreats" target="_blank" rel="noopener">Tasman Glacier Retreats</a></h4>
+              <p class="rc-src">NASA Earth Observatory</p>
+              <p class="rc-deck">塔斯曼冰川末端在 1990–2015 年退缩约 4.5 公里，主要机制不是融化而是崩解：冰舌伸进自己融水形成的冰前湖，水体从下方热侵蚀掏空冰壁。这个湖十年间长到约 7 公里，是一个「五十年前并不存在」的地貌。看完再站在塔斯曼湖边，浮冰的意义完全不同。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>6 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.02 塔斯曼冰川观景步道</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">04</span><span class="rc-kind official">百科条目</span></div>
+              <h4><a href="https://teara.govt.nz/en/glaciers-and-glaciation" target="_blank" rel="noopener">Glaciers and glaciation</a></h4>
+              <p class="rc-src">Te Ara: The Encyclopedia of New Zealand</p>
+              <p class="rc-deck">把「眼前的谷地」换算成「曾经的冰体」最好的一篇：塔斯曼冰川今长约 29 公里、厚达 600 米；2.2 万–1.6 万年前它与 Murchison、Hooker、Mueller 冰流合并，曾延伸约 115 公里。1962–2018 年间新西兰冰川损失了约 38% 的体积。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>20 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.01—10.03 库克山与蒂卡波沿线</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">05</span><span class="rc-kind story">卫星影像解读</span></div>
+              <h4><a href="https://earthobservatory.nasa.gov/images/145055/how-glaciers-turn-lakes-turquoise" target="_blank" rel="noopener">How Glaciers Turn Lakes Turquoise</a></h4>
+              <p class="rc-src">NASA Earth Observatory</p>
+              <p class="rc-deck">颜色来自悬浮的冰川岩粉，不是矿物溶解。影像显示 Godley 河把 Classen、Gray、Godley 三条冰川的融水带进蒂卡波湖北端；塔斯曼与胡克冰川的融水则经塔斯曼河进入普卡基湖。细颗粒优先散射蓝绿波段，浓度越高越偏乳白青绿——所以同一个湖不同季节、不同湖湾颜色都不一样。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>6 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.01 普卡基湖 · 10.03 蒂卡波</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">06</span><span class="rc-kind official">官方科普</span></div>
+              <h4><a href="https://www.doc.govt.nz/parks-and-recreation/places-to-go/canterbury/places/lake-tekapo-area/" target="_blank" rel="noopener">Lake Tekapo area：麦肯齐盆地的冰川地貌</a></h4>
+              <p class="rc-src">DOC 新西兰保护部</p>
+              <p class="rc-deck">盆地里能辨认出至少四次主要冰进留下的冰碛垄；蒂卡波湖正位于约 1.2 万–1.4 万年前「蒂卡波冰进」的冰碛之后，占据冰退后的谷地，湖长约 30 公里、深约 120 米。配 Te Ara 的南坎特伯雷条目一起读，能看懂上 Waitaki 水电方案如何用运渠与坝把 Ōhau／Pūkaki／Tekapo 串成一套人工水系。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>8 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.03 蒂卡波—SH8 运渠段</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">07</span><span class="rc-kind paper">科研报道（Science Advances）</span></div>
+              <h4><a href="https://niwa.co.nz/news/kaikoura-earthquake-provides-world-first-insight-submarine-canyons" target="_blank" rel="noopener">凯库拉地震与海底峡谷的「一次性冲刷」</a></h4>
+              <p class="rc-src">NIWA（含<a href="https://niwa.co.nz/news/kaikoura-canyon-shows-early-signs-ecosystem-recovery" target="_blank" rel="noopener">生态恢复进展篇</a>）</p>
+              <p class="rc-deck">2016 年 M7.8 凯库拉地震触发峡谷壁大规模滑塌，形成一次完整的峡谷冲刷，把沉积物一路输送到深海 Hikurangi 通道，峡谷头部底栖生物量被大量清空。这次地震破裂了 21 条以上陆上与海底断层、总长逾 100 公里，并造成大范围海岸抬升——岸边那条死亡海藻带和裸露岩滩就是证据。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>10 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.04 凯库拉观鲸与海岸带</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">08</span><span class="rc-kind official">官方科普</span></div>
+              <h4><a href="https://www.darkskyreserve.org.nz/the-reserve" target="_blank" rel="noopener">The Aoraki Mackenzie International Dark Sky Reserve</a></h4>
+              <p class="rc-src">Aoraki Mackenzie 暗夜保护区官方</p>
+              <p class="rc-deck">保护区 2012 年获 DarkSky International 认证，面积 4,367 平方公里，是南半球最大、全球第三大。成立基础是麦肯齐盆地的地形与雨影效应：干燥、低湿、少云。约南纬 44° 的 Mt John 天文台可观测大小麦哲伦云、银河系中心与变星系统。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>7 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.02—10.03 蒂卡波夜观</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">09</span><span class="rc-kind official">官方资料 + 考察点</span></div>
+              <h4><a href="https://www.gns.cri.nz/assets/Our-Science/Subfiles/Natural-Hazards-and-Risks/Subfiles/Volcanoes/Volcano-Fact-Sheet-Dunedin.pdf" target="_blank" rel="noopener">Dunedin Volcano 火山概况 &amp; Tunnel Beach 地质</a></h4>
+              <p class="rc-src">GNS Science（PDF）／<a href="https://www.geotrips.org.nz/trip.html?id=587" target="_blank" rel="noopener">GeoTrips</a></p>
+              <p class="rc-deck">但尼丁市区、奥塔哥半岛与奥塔哥港同属一座已死火山的残骸，原本从今天的但尼丁延伸到约 25 公里外的 Aramoana，近 1000 万年的侵蚀把火山口区改造成海湾。Tunnel Beach 的 Caversham 砂岩是分选良好的海相沉积，沉积时海岸线远在今天位置的内陆；此后约 2000 万年的海岸后退，是构造抬升与火山下方岩浆侵入造成的地壳穹起共同作用的结果。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>12 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.26 Tunnel Beach · 奥塔哥半岛</span></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="shelf" id="shelf-wild">
+          <div class="shelf-head">
+            <div>
+              <p class="section-kicker">Reading 02 · Wildlife &amp; Ecology</p>
+              <h3>动物与生态<small>9 篇 · 约 120 分钟</small></h3>
+            </div>
+            <p>这条线上的动物几乎都处在「濒危」或「刚从濒危爬回来」的状态，观察距离不是礼貌问题而是法规问题。先读物种档案，再看最下面的距离速查表。</p>
+          </div>
+          <div class="read-list">
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">01</span><span class="rc-kind official">官方物种页</span></div>
+              <h4><a href="https://www.doc.govt.nz/nature/native-animals/birds/birds-a-z/penguins/yellow-eyed-penguin-hoiho/" target="_blank" rel="noopener">黄眼企鹅 hoiho 物种档案</a></h4>
+              <p class="rc-src">DOC 新西兰保护部</p>
+              <p class="rc-deck">hoiho 是新西兰特有种，等级 Threatened–Nationally Endangered，2019 年估计全球成熟个体仅 4,000–5,000 只。南岛本土 2019 年只剩约 265 对繁殖对，20 年下降 65%；Rakiura 2020 年调查从 2008/09 的 154 对跌到 44 对。威胁是食物短缺、疾病、鼬类与犬类捕食，以及人类干扰——这就是 Sandfly Bay 必须远观的直接原因。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>8 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.26 Sandfly Bay</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">02</span><span class="rc-kind story">长报道 + 官方步道页</span></div>
+              <h4><a href="https://www.nzgeo.com/stories/hoiho-still-on-the-brink/" target="_blank" rel="noopener">Hoiho：仍在悬崖边</a></h4>
+              <p class="rc-src">New Zealand Geographic／<a href="https://www.doc.govt.nz/parks-and-recreation/places-to-go/otago/places/otago-peninsula-area/things-to-do/sandfly-bay-track/" target="_blank" rel="noopener">DOC Sandfly Bay Track</a></p>
+              <p class="rc-deck">长报道解释了成鸟必须远海觅食、恶劣海况会让它们整日滞岸挨饿。DOC 页给硬数字：企鹅 ≥50 m、海狗与海狮 ≥20 m、禁闪光灯，绝不可挡住上下水路线（否则亲鸟无法回巢喂雏）。沙丘步道陡峭、黄昏光线差，务必多留时间。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>20 + 4 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.26 黄昏 Sandfly Bay</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">03</span><span class="rc-kind official">官方物种页</span></div>
+              <h4><a href="https://www.doc.govt.nz/nature/native-animals/birds/birds-a-z/penguins/little-penguin-korora/" target="_blank" rel="noopener">小蓝企鹅 kororā 与归巢行为</a></h4>
+              <p class="rc-src">DOC 新西兰保护部</p>
+              <p class="rc-deck">kororā 是世界最小的企鹅，高约 25 cm、重约 1 kg，黄昏成筏上岸。Takiharuru／Pilots Beach 约 500 只、200 多对繁殖对，观众固定在观景平台，就是为了不切断归巢路线；场地允许无闪光摄影但禁三脚架。依赖夜视的眼睛被强光击中会迷失方向甚至弃巢——这是「禁闪光灯」的科学依据。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>6 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.26 傍晚 Pilots Beach</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">04</span><span class="rc-kind official">官方新闻稿 + 长报道</span></div>
+              <h4><a href="https://www.doc.govt.nz/news/media-releases/2025-media-releases/toroaalbatross-season-breaks-records/" target="_blank" rel="noopener">Pukekura：世界唯一大陆信天翁繁殖地</a></h4>
+              <p class="rc-src">DOC／<a href="https://www.nzgeo.com/stories/500th-chick-for-taiaroa/" target="_blank" rel="noopener">NZ Geographic</a></p>
+              <p class="rc-deck">北方皇家信天翁 toroa 约 8 岁开始繁殖、通常两年养一雏，等级 Nationally Vulnerable，全球成熟个体约 17,000 只。泰亚罗瓦角是全球唯一的大陆繁殖地，但只有约 70 对（全球 1%），其余约 5,500 对在查塔姆群岛且仍在下降。1920 年首次记录产卵后，因偷蛋与人为干扰，整整 16 年没能成功育出幼鸟。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>12 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.26 泰亚罗瓦角</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">05</span><span class="rc-kind official">官方指引</span></div>
+              <h4><a href="https://www.doc.govt.nz/nature/native-animals/marine-mammals/seals/nz-fur-seal/what-to-do" target="_blank" rel="noopener">新西兰海狗 kekeno：从近乎灭绝到回归</a></h4>
+              <p class="rc-src">DOC 新西兰保护部</p>
+              <p class="rc-deck">kekeno 曾被商业猎杀到濒临灭绝，现已恢复到沿岸随处可见，约一半时间在海里追鱼与乌贼。官方要求至少保持 20 m，不要站在它和海之间——挡住退路的海狗会咬人；独处的幼崽属正常现象，千万不要搬动或「救助」。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>6 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.26 Sandfly Bay · 10.04 凯库拉</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">06</span><span class="rc-kind paper">同行评审论文</span></div>
+              <h4><a href="https://www.sciencedirect.com/science/article/pii/S0967063720300145" target="_blank" rel="noopener">凯库拉抹香鲸：觅食下潜与船只干扰</a></h4>
+              <p class="rc-src">Deep-Sea Research（经 ScienceDirect）</p>
+              <p class="rc-deck">凯库拉海底峡谷把深水带到离岸几公里处，形成雄性抹香鲸全年可见的觅食场。这也是研究船只干扰的天然实验室：论文关注下潜—换气周期与观鲸船接近之间的关系。付费墙内可只读摘要，但足以理解「为什么观鲸船必须保持 50 m 并平行跟随」。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>15 分钟（摘要 3 分钟）</span><span class="rc-day"><i data-lucide="map-pin"></i>10.04 Whale Watch Kaikōura</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">07</span><span class="rc-kind official">官方物种页</span></div>
+              <h4><a href="https://www.doc.govt.nz/nature/native-animals/marine-mammals/dolphins/hectors-dolphin/" target="_blank" rel="noopener">黑白海豚与暗色斑纹海豚</a></h4>
+              <p class="rc-src">DOC（另见<a href="https://www.doc.govt.nz/nature/native-animals/marine-mammals/dolphins/dusky-dolphin/" target="_blank" rel="noopener">dusky dolphin</a>）</p>
+              <p class="rc-deck">Hector's dolphin 是新西兰特有、世界最小海豚之一，现存约 15,000 只，等级 Nationally Vulnerable，最大威胁是刺网与拖网缠绕。凯库拉近岸更常见的是暗色斑纹海豚，成群跳跃、数量 2 万–10 万只。皮划艇「追海豚」要看清运营方是否遵守不切断路线、不绕圈穿群的规定。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>8 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.04 皮划艇（如加）</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">08</span><span class="rc-kind story">长报道 + 综述 + 政策页</span></div>
+              <h4><a href="https://www.nzgeo.com/stories/birds-of-play/" target="_blank" rel="noopener">kea：高智商、1080 与 Predator Free 2050 的两难</a></h4>
+              <p class="rc-src">NZ Geographic／<a href="https://www.tandfonline.com/doi/pdf/10.1080/03014223.2023.2274838" target="_blank" rel="noopener">NZ Journal of Zoology 综述</a>／<a href="https://www.doc.govt.nz/nature/pests-and-threats/methods-of-control/1080/addressing-concerns-about-1080/" target="_blank" rel="noopener">DOC 1080 政策</a></p>
+              <p class="rc-deck">亚瑟隘口停车场的「kea 群」掩盖了南阿尔卑斯种群明显下降的事实。偏远山地唯一可行的害兽控制是空投 1080，而部分 kea 会主动取食毒饵；综述引用的研究显示风险与离人类聚落的距离强相关——小于 20 km 的种群比大于 40 km 的更可能摄入致死剂量。这是理解新西兰生态政策最好的入口：没有无代价的选项。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>30 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.29 达特河谷 · 10.02 库克山</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">09</span><span class="rc-kind official">法规原文 + 官方速查</span></div>
+              <h4><a href="https://www.legislation.govt.nz/secondary-legislation/pco-drafted/1992/322/en/latest/" target="_blank" rel="noopener">Marine Mammals Protection Regulations 1992</a></h4>
+              <p class="rc-src">NZ Legislation／<a href="https://www.doc.govt.nz/sharingcoasts" target="_blank" rel="noopener">DOC Sharing our coasts</a></p>
+              <p class="rc-deck">船只不得进入鲸类 50 m 内；人在水中不得距鲸类 100 m 内。若某海豚群或海豹群周围已有 3 艘及以上船只或飞机，其他须退到 300 m 外；任何人、车、船都不得切断动物的前进路线。DOC 补充：与须鲸或抹香鲸母幼对保持 200 m 以上，禁止与鲸共游。违规最高罚款 10,000 纽元。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>8 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.04 起全程适用</span></div>
+            </article>
+          </div>
+
+          <div class="prep-block">
+            <h4><i data-lucide="ruler"></i>观察距离与伦理速查</h4>
+            <ul class="rule-list">
+              <li><span><b>海狗 / 海狮（kekeno、rāpoka）：至少 20 m。</b>不站在它与海之间，不喧哗、不投喂、不触碰；幼崽独处属正常，切勿搬动。<cite>（DOC）</cite></span></li>
+              <li><span><b>黄眼企鹅 hoiho：至少 50 m。</b>绝不接近或跟随，不挡上下水通路，禁闪光灯；最好躲在隐蔽屏后，让它看不见你。<cite>（DOC／Yellow-eyed Penguin Trust）</cite></span></li>
+              <li><span><b>小蓝企鹅 kororā：只在指定观景平台看。</b>禁闪光与补光、保持安静；Pilots Beach 允许无闪光摄影但禁三脚架。<cite>（Blue Penguins Pukekura／Tourism New Zealand 企鹅守则）</cite></span></li>
+              <li><span><b>企鹅保护区有时段管理。</b>例如 Bushy Beach 下午 3 点至次日 9 点禁入海滩，与海洋野生动物保持 20 m 以上。<cite>（DOC）</cite></span></li>
+              <li><span><b>信天翁 toroa：不可自行进入巢区。</b>Taiaroa Head 为自然保护区，只能随导览在玻璃观察站内观看。<cite>（Royal Albatross Centre／DOC）</cite></span></li>
+              <li><span><b>鲸（含抹香鲸、虎鲸）：船只 ≥50 m、人在水中 ≥100 m、母幼对 ≥200 m，禁止与鲸共游。</b>违规最高罚款 10,000 纽元。<cite>（MMPR 1992／DOC）</cite></span></li>
+              <li><span><b>海豚与海豹群：同一群体周围最多 3 艘船或飞机</b>，超出者须退到 300 m 外；不得切断路线、不得绕圈穿群。<cite>（MMPR 1992）</cite></span></li>
+              <li><span><b>车辆须留在大潮高潮线以上</b>，且不得驶入海洋哺乳动物 50 m 内（停车场、下水滑道、公共道路除外）。企鹅与海豹海滩一律禁犬。<cite>（MMPR 1992／DOC）</cite></span></li>
+            </ul>
+          </div>
+
+          <div class="prep-block">
+            <h4><i data-lucide="paw-print"></i>物种速认卡</h4>
+            <div class="species-wrap">
+              <table class="species-table">
+                <thead><tr><th>中文名</th><th>毛利语名</th><th>学名</th><th>一句速认</th></tr></thead>
+                <tbody>
+                  <tr><td><b>黄眼企鹅</b></td><td>hoiho</td><td><em>Megadyptes antipodes</em></td><td>世界最稀有企鹅之一，2019 年全球成熟个体仅 4,000–5,000 只</td></tr>
+                  <tr><td><b>小蓝企鹅</b></td><td>kororā</td><td><em>Eudyptula minor</em></td><td>世界最小企鹅，高约 25 cm、重约 1 kg，黄昏成筏上岸</td></tr>
+                  <tr><td><b>北方皇家信天翁</b></td><td>toroa</td><td><em>Diomedea sanfordi</em></td><td>全球唯一大陆繁殖地在 Pukekura，约 70 对（占全球 1%）</td></tr>
+                  <tr><td><b>新西兰海狗</b></td><td>kekeno</td><td><em>Arctocephalus forsteri</em></td><td>曾被猎杀到濒危、现已恢复；约一半时间在海中追鱼与乌贼</td></tr>
+                  <tr><td><b>抹香鲸</b></td><td>parāoa</td><td><em>Physeter macrocephalus</em></td><td>凯库拉海底峡谷是雄鲸的全年觅食场</td></tr>
+                  <tr><td><b>黑白海豚</b></td><td>tutumairekurai / tūpoupou</td><td><em>Cephalorhynchus hectori</em></td><td>世界最小海豚之一，现存约 15,000 只，Nationally Vulnerable</td></tr>
+                  <tr><td><b>暗色斑纹海豚</b></td><td>—</td><td><em>Lagenorhynchus obscurus</em></td><td>2 万–10 万只，凯库拉是热点，跳跃极活跃</td></tr>
+                  <tr><td><b>啄羊鹦鹉</b></td><td>kea</td><td><em>Nestor notabilis</em></td><td>高智商高山鹦鹉；距人类聚落 &lt;20 km 的种群 1080 中毒风险显著更高</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="shelf" id="shelf-human">
+          <div class="shelf-head">
+            <div>
+              <p class="section-kicker">Reading 03 · People &amp; Society</p>
+              <h3>人文与社会<small>11 篇 · 约 200 分钟</small></h3>
+            </div>
+            <p>这片土地上的人：Ngāi Tahu 与条约、双语地名、淘金潮里的华人矿工、苏格兰移民的但尼丁，以及高山牧场、皇后镇住房与灾后重建这些还在发生的当代议题。</p>
+          </div>
+          <div class="read-list">
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">01</span><span class="rc-kind official">部族官方 + 政府史料</span></div>
+              <h4><a href="https://ngaitahu.iwi.nz/ngai-tahu/creation-stories/the-settlement/claim-history/" target="_blank" rel="noopener">Ngāi Tahu 索赔史：从 1986 立案到「九棵大树」</a></h4>
+              <p class="rc-src">Te Rūnanga o Ngāi Tahu／<a href="https://nzhistory.govt.nz/politics/treaty/the-treaty-in-practice/ngai-tahu" target="_blank" rel="noopener">NZ History</a></p>
+              <p class="rc-deck">Ngāi Tahu 1986 年向 Waitangi Tribunal 提交 Wai 27 索赔，成为该庭首个可追溯至 1840 年的大规模历史索赔，听证在 1987–1989 年进行。1991 年 2 月 1 日发布的《Ngāi Tahu Report 1991》分三卷、逾 1200 页，把申诉归纳为「九棵大树」。起点是 1848 年之后一系列廉价土地购买中，皇室承诺的保留地大量没有兑现。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>15—20 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>全程 · 落地基督城当天读</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">02</span><span class="rc-kind official">法律原文</span></div>
+              <h4><a href="https://www.legislation.govt.nz/act/public/1998/0097/latest/whole.html" target="_blank" rel="noopener">Ngāi Tahu Claims Settlement Act 1998：道歉与赔偿</a></h4>
+              <p class="rc-src">NZ Legislation</p>
+              <p class="rc-deck">和解契约 1997 年 11 月 21 日签署，法案 1998 年 9 月 29 日通过，经济赔偿 1.7 亿新元。皇室在道歉文本中承认自己「行为不可饶恕（unconscionably），并反复违反《怀唐伊条约》原则」。其中关于 Aoraki／Mount Cook 归还与回赠的条款，最好和第 3 条对照读——只读 Preamble 与 Part 1 就够。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>20 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.01—10.03 麦肯齐盆地</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">03</span><span class="rc-kind official">政府史料 + 官方释义</span></div>
+              <h4><a href="https://www.waitangitribunal.govt.nz/en/about/the-treaty/maori-and-english-versions" target="_blank" rel="noopener">两个文本，两种理解：sovereignty vs kāwanatanga</a></h4>
+              <p class="rc-src">Waitangi Tribunal／<a href="https://nzhistory.govt.nz/page/differences-between-texts" target="_blank" rel="noopener">NZ History</a></p>
+              <p class="rc-deck">1840 年 2 月 6 日起签署的九份文本中，500 余位 rangatira 几乎全部签的是毛利文本。英文第一条让出「sovereignty（主权）」，毛利文却写作「te kāwanatanga katoa（完整的治理权）」；第二条英文保证「undisturbed possession」，毛利文保证的是「tino rangatiratanga」。当时毛利社会没有对应「主权」的词，这道翻译裂缝至今支撑着法理争论。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>15 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>出发前 / 长途车程</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">04</span><span class="rc-kind story">学者评论</span></div>
+              <h4><a href="https://theconversation.com/after-the-hikoi-the-challenge-the-treaty-principles-debate-and-an-honest-reckoning-with-history-244806" target="_blank" rel="noopener">为何 Te Tiriti 仍是当代政治核心：Treaty Principles Bill 与 hīkoi</a></h4>
+              <p class="rc-src">The Conversation</p>
+              <p class="rc-deck">2024 年 11 月法案提交，引发全国 hīkoi（游行）于 11 月 19 日抵达国会。Waitangi Tribunal 指出立法过程刻意未与毛利协商，违反伙伴关系与善治原则，并可能危及既有和解的持久性。理解这场争论，才读得懂路牌、机构名与双语标识背后的政治张力。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>20 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>全程背景</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">05</span><span class="rc-kind official">官方标准（PDF）</span></div>
+              <h4><a href="https://www.linz.govt.nz/sites/default/files/2026-01/nzgb_standard-new-zealand-place-names_nzgbs60002_20260126.pdf" target="_blank" rel="noopener">双名制与 Aoraki：87 个双语地名如何诞生</a></h4>
+              <p class="rc-src">LINZ／新西兰地名委员会（另见 <a href="https://www.linz.govt.nz/products-services/place-names" target="_blank" rel="noopener">地名总览</a>）</p>
+              <p class="rc-deck">1998 年 Ngāi Tahu 和解一次性确立 87 个英／毛利双名，包括 Aoraki / Mount Cook，国家公园同步改名。官方标准规定双名用「空格＋斜杠＋空格」分隔，毛利名通常置前。法律安排是：皇室先将 Aoraki 地权授予 Te Rūnanga o Ngāi Tahu，部族随即回赠全体国民，并以 Tōpuni 制度承载部族文化价值——所有权象征性归还，公共进入不受影响。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>15 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>10.02 Aoraki 观山日</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">06</span><span class="rc-kind official">百科 + 部族官方</span></div>
+              <h4><a href="https://teara.govt.nz/en/pounamu-jade-or-greenstone/page-3" target="_blank" rel="noopener">pounamu 的归还：1997 年 Pounamu Vesting Act</a></h4>
+              <p class="rc-src">Te Ara／<a href="https://ngaitahu.iwi.nz/te-runanga-o-ngai-tahu/our-work-pou/strategy-and-environment/pounamu/" target="_blank" rel="noopener">Ngāi Tahu 官方</a></p>
+              <p class="rc-deck">源于 1996 年 6 月 14 日的「On Account」预付和解，《Ngāi Tahu (Pounamu Vesting) Act 1997》于 1997 年 9 月 25 日通过，把部族领域（takiwā）及邻接领海内所有天然状态 pounamu 的所有权归还 Te Rūnanga o Ngāi Tahu；Arahura 河流域部分由 Māwhera Corporation 持有。买绿石前读这一篇，能分辨什么叫来源正当。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>10—15 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>皇后镇 / 但尼丁购物</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">07</span><span class="rc-kind paper">政府史料 + 同行评审论文</span></div>
+              <h4><a href="https://nzhistory.govt.nz/culture/maori-language-week/history-of-the-maori-language" target="_blank" rel="noopener">te reo Māori 复兴：从 1982 年第一间 Kōhanga Reo 说起</a></h4>
+              <p class="rc-src">NZ History／<a href="https://nzlingsoc.org/wp-content/uploads/2024/02/Te-Reo-2-Lane-2023.pdf" target="_blank" rel="noopener">Te Reo（NZ 语言学会，PDF）</a></p>
+              <p class="rc-deck">1982 年首间 kōhanga reo（语言巢）在 Lower Hutt 开办，1991 年已有 630 间、10,451 名儿童入园；1987 年毛利语成为官方语言并设立语言委员会。2013 年人口普查显示 21.3% 的毛利人会说毛利语（125,352 人）。基于 Te Kupenga 2018 的分析显示，最年轻一代在母语使用者中已占多数，是复兴的关键信号。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>25 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>全程 · 地名发音练习</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">08</span><span class="rc-kind official">官方遗址说明 + 政府史料</span></div>
+              <h4><a href="https://www.doc.govt.nz/parks-and-recreation/places-to-go/otago/places/arrowtown-area/things-to-do/arrowtown-chinese-settlement/" target="_blank" rel="noopener">箭镇华人矿工聚落：人头税与 2002 年道歉</a></h4>
+              <p class="rc-src">DOC／<a href="https://nzhistory.govt.nz/media/photo/arrowtown-chinese-settlement" target="_blank" rel="noopener">NZ History</a></p>
+              <p class="rc-deck">1866 年奥塔哥华人矿工不足 200 人，1874 年普查已达 3,564 人，多在金矿区劳作。1881 年政府开征人头税 10 英镑、后提高到 100 英镑，直到 1944 年才废止；2002 年新西兰政府就此正式向华人社群道歉。箭镇聚落在 1980 年代初经系统考古发掘，Ah Lum 店铺已修复，是这段移民史保存最完整的现场。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>15 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.28 箭镇半日</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">09</span><span class="rc-kind official">百科条目</span></div>
+              <h4><a href="https://teara.govt.nz/en/scots/page-3" target="_blank" rel="noopener">但尼丁：1848 年苏格兰自由教会造出的「新爱丁堡」</a></h4>
+              <p class="rc-src">Te Ara（Scots／<a href="https://teara.govt.nz/en/otago-region" target="_blank" rel="noopener">Otago region</a>）</p>
+              <p class="rc-deck">1848 年自由教会移民乘 John Wickliffe 与 Philip Laing 抵达奥塔哥港，城市名 Dunedin 取自爱丁堡的古盖尔语名 Dùn Èideann，测量师 Charles Kettle 刻意仿爱丁堡布局。黄金与长老会共同奠定奥塔哥：1880 年前后但尼丁是全国最大最富的城市，奥塔哥大学与医学院的声望延续至今；而淘金者迅速在人数上超过了当地 Ngāi Tahu。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>20 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.26 但尼丁 citywalk</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">10</span><span class="rc-kind paper">官方报告 + 官方数据 + 深度报道</span></div>
+              <h4><a href="https://environment.govt.nz/publications/our-land-2021/chapter-3-our-activities-and-their-effects/" target="_blank" rel="noopener">高山牧场 tenure review 与皇后镇住房危机</a></h4>
+              <p class="rc-src">Ministry for the Environment《Our Land 2021》／<a href="https://www.qldc.govt.nz/media/rmddvw1t/a3-queenstown-lakes-housing-story-june-24.pdf" target="_blank" rel="noopener">QLDC 住房简报</a>／<a href="https://www.odt.co.nz/otago/queenstown/zombie-town-fears-as-queenstown-reaches-breaking-point-s6y0881q" target="_blank" rel="noopener">ODT</a></p>
+              <p class="rc-deck">1998 年《Crown Pastoral Land Act》把 tenure review 制度化：租户可买下部分土地为永久产权，其余划归保护地。官方评估指出麦肯齐盆地底部大量土地因此私有化，到 2020 年海拔 800 米以下受任何形式保护的不足十分之一，该制度已被终止。皇后镇一侧：截至 2023 年 6 月年度 330 万游客、约每位居民对应 63 名游客，平均房价超过 180 万新元，已出现居民住车里的情形。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>30 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>麦肯齐盆地 / 皇后镇</span></div>
+            </article>
+            <article class="read-card">
+              <div class="rc-top"><span class="rc-num">11</span><span class="rc-kind paper">同行评审论文</span></div>
+              <h4><a href="https://doi.org/10.1080/1177083X.2024.2357546" target="_blank" rel="noopener">灾后重建的治理实验：Ōtautahi 基督城红区共治</a></h4>
+              <p class="rc-src">Kōtuitui / Journal of the Royal Society of New Zealand</p>
+              <p class="rc-deck">2010 年 9 月与 2011 年 2 月地震后，602 公顷住宅用地被划为红区、居民迁离。论文追踪 Ōtākaro Avon 河廊的「管理式撤退」如何转为治理创新：市议会设立共治筹备委员会，由 Ngāi Tūāhuriri 与市议会各派等量代表，到 2023 年底已订出项目评估原则。和凯库拉 2016 年 11 月 14 日地震后的社区恢复研究对照读，会发现「重建」是社会过程，而不是工程节点。</p>
+              <div class="rc-foot"><span><i data-lucide="clock"></i>30 分钟</span><span class="rc-day"><i data-lucide="map-pin"></i>09.25 / 10.05 基督城</span></div>
+            </article>
+          </div>
+
+          <div class="keyword-grid">
+            <div class="keyword-card">
+              <b>Ngāi Tahu</b>
+              <i class="kw-sub">南岛主要毛利部族</i>
+              <p>南岛（Te Waipounamu）的主要部族，18 世纪中叶前已通过迁徙、战争与联姻成为大部分南岛的 tangata whenua（土地之民）。1986 年立案、1991 年获 Tribunal 报告、1998 年完成和解，赔偿 1.7 亿新元。</p>
+              <cite>来源：NZ History、Waitangi Tribunal</cite>
+            </div>
+            <div class="keyword-card">
+              <b>Te Tiriti o Waitangi</b>
+              <i class="kw-sub">1840 年的建国文件</i>
+              <p>有英文与毛利文两个版本。英文写「让出主权」，毛利文写「让出 kāwanatanga（治理权）」并保证 tino rangatiratanga。理解这道差异，才理解今天关于条约原则的全部争论。</p>
+              <cite>来源：Waitangi Tribunal、NZ History</cite>
+            </div>
+            <div class="keyword-card">
+              <b>Aoraki（双名制）</b>
+              <i class="kw-sub">Aoraki / Mount Cook</i>
+              <p>1998 年和解一次性确立 87 个双语地名，最高峰正式名为 Aoraki / Mount Cook，国家公园同步改名。官方规则要求毛利名在前、斜杠两侧留空格；Aoraki 由部族接收后回赠全体国民。</p>
+              <cite>来源：LINZ 新西兰地名委员会</cite>
+            </div>
+            <div class="keyword-card">
+              <b>pounamu</b>
+              <i class="kw-sub">绿石 / 软玉</i>
+              <p>Ngāi Tahu 世代相传的 taonga（珍宝）。1997 年立法把部族领域内天然状态 pounamu 的所有权归还 Te Rūnanga o Ngāi Tahu——它不只是纪念品，而是有法律归属的文化财。</p>
+              <cite>来源：Te Ara、Ngāi Tahu 官方</cite>
+            </div>
+            <div class="keyword-card">
+              <b>kaitiakitanga</b>
+              <i class="kw-sub">守护的责任伦理</i>
+              <p>照看土地、水与资源的责任。1998 年和解中皇室明确承认 Ngāi Tahu 在南岛资源管理上的 kaitiaki 角色，这是双语地名、共治机构与 pounamu 管理制度共同的底层逻辑。与之并列的 manaakitanga 指以尊重与慷慨待客——客人同样有回应此礼的义务。</p>
+              <cite>来源：Ngāi Tahu 官方、NZ Legislation</cite>
+            </div>
+          </div>
+
+          <div class="prep-block">
+            <h4><i data-lucide="heart-handshake"></i>旅行者的基本礼节</h4>
+            <ul class="rule-list">
+              <li><span><b>marae 是有主之地，不是景点。</b>进入需经邀请与 pōwhiri（迎客仪式）流程，未获安排不要自行踏入；跟随主人指引，脱鞋、不在会堂内进食。</span></li>
+              <li><span><b>wāhi tapu（圣地）与墓地不拍照打卡。</b>山顶、岩画、埋骨地一类场所优先假定「不可拍摄」，有告示以告示为准；Aoraki 在和解中被承认为部族祖先，登顶与合影都请克制。</span></li>
+              <li><span><b>pounamu 要问来路。</b>天然状态 pounamu 的所有权属 Te Rūnanga o Ngāi Tahu，河床捡拾带走并不合法；请在有来源说明的正规店铺购买，别把它当「便宜玉石」议价。</span></li>
+              <li><span><b>地名带宏音符就写全。</b>Kaikōura、Ōtautahi、Aoraki、Te Waipounamu——macron 表示长元音，漏写即改音变义；官方双名写法是「Aoraki / Mount Cook」，斜杠两侧各留一空格。<cite>（LINZ）</cite></span></li>
+              <li><span><b>发音尽力而为，好过回避。</b>毛利语元音固定：a-e-i-o-u 近似「阿-埃-伊-奥-乌」，ng 是鼻音、wh 多读 f。读错可以被纠正，用英文绰号替代才失礼。</span></li>
+              <li><span><b>高山牧场是私人经营地。</b>麦肯齐盆地与瓦纳卡一带大量土地是 Crown pastoral lease 或已转永久产权，围栏、闸门、牧道皆有主；关门如原状，不驶入草地，不惊扰牲畜与牧羊犬。</span></li>
+              <li><span><b>在被重建的城市里放低镜头。</b>基督城与凯库拉的空地、红区背后是搬离的家庭；拍摄前想一想，并优先把钱花在本地店家——皇后镇的住房压力提醒我们，游客的每一笔消费都有分配后果。</span></li>
+            </ul>
+          </div>
+        </section>
+
       </div>
     </section>
 
@@ -1433,7 +1994,7 @@
         <div class="credits-inner">
           <p>《新西兰南岛旅行计划 · 2026》｜行程数据来自阿稻的飞书多维表格《阿稻的新西兰行程》（行程 / 待购买物品 / 签证材料三张表），页面为公开分享版，不含预订单、票据与个人证件信息。</p>
           <p class="src">地图底图 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors，交互由 Leaflet 提供。图片均来自 Wikimedia Commons，版权归原作者所有：Krzysztof Golik (CC BY-SA 4.0)、lumoplank (CC0)、Gibrate1 (CC0)、Nick-D (CC BY-SA 4.0)、Michal Klajban (CC BY-SA 4.0)、W. Bulach (CC BY-SA 4.0)、Aleks Dahlberg (CC0)、Ingolfson (PD)、Avenue (CC BY-SA 3.0)、Andy Witchger (CC BY 2.0)、profernity (CC BY 2.0)、Bernard Spragg (CC0 / PD)、AJMANDELL1 (CC BY-SA 4.0)、Steve Collis (CC BY 2.0)、Pseudopanax (CC BY 3.0)、Robert Linsdell (CC BY 2.0)、Jillianalma (CC BY-SA 4.0)、Sky_xe (CC BY-SA 4.0)、Mathijs van den Berg (CC BY-SA 4.0)、Oren Rozen (CC BY-SA 3.0)、Donaldytong (CC BY-SA 3.0)。</p>
-          <p class="src">行程与金额以表格最后一次同步为准（2026-09-18）；标注「待预订 / 待确认」的项目仍可能变化。</p>
+          <p class="src">行程与金额以表格最后一次同步为准（2026-09-20）；标注「待预订 / 待确认」的项目仍可能变化。</p>
         </div>
       </footer>
     </section>
@@ -1442,6 +2003,7 @@
 
   <script src="vendor/leaflet.js"></script>
   <script src="vendor/lucide.min.js"></script>
+  <script src="assets/weather.js"></script>
   <script>
     /* ============ tabs ============ */
     const tabs = Array.from(document.querySelectorAll('.workspace-tab'));
@@ -1542,7 +2104,7 @@
       mtcook: { coords: [-43.7340, 170.0980], order: '7', label: 'Aoraki / Mount Cook Village', detail: '库克山国家公园｜胡克步道起点｜10/2' },
       hooker: { coords: [-43.7020, 170.0930], label: 'Hooker Lake', detail: '胡克冰川终端湖｜三座吊桥尽头', site: true },
       tekapo: { coords: [-44.0049, 170.4790], order: '8', label: 'Lake Tekapo · 蒂卡波', detail: '国际暗夜保护区｜住 1 晚｜10/2' },
-      kaikoura: { coords: [-42.4009, 173.6811], order: '9', label: 'Kaikōura · 凯库拉', detail: '观鲸与海钓｜住 2 晚｜10/3—10/4' },
+      kaikoura: { coords: [-42.4009, 173.6811], order: '9', label: 'Kaikōura · 凯库拉', detail: '观鲸与小镇｜住 2 晚｜10/3—10/4' },
       whalearea: { coords: [-42.4600, 173.7800], label: '观鲸海域（示意）', detail: '凯库拉海沟｜抹香鲸常年驻留', site: true },
       melbourne: { coords: [-37.8136, 144.9631], order: 'B', label: 'Melbourne · 墨尔本', detail: '返程过夜｜机场酒店｜10/5' }
     };
@@ -1567,7 +2129,7 @@
       { kind: 'road', name: '库克山 → 蒂卡波', pts: [places.mtcook.coords, [-44.1900, 170.1400], places.twizel.coords, places.tekapo.coords] },
       { kind: 'road', name: '蒂卡波 → 凯库拉（5h）', pts: [places.tekapo.coords, [-44.0980, 170.8290], [-43.7900, 171.6800], places.christchurch.coords, [-42.9000, 173.2700], places.kaikoura.coords] },
       { kind: 'road', name: '凯库拉 → 基督城（3h）', pts: [places.kaikoura.coords, [-42.9000, 173.2700], places.christchurch.coords] },
-      { kind: 'boat', name: '出海观鲸 / 海钓', pts: [places.kaikoura.coords, places.whalearea.coords] }
+      { kind: 'boat', name: '出海观鲸', pts: [places.kaikoura.coords, places.whalearea.coords] }
     ];
 
     const STYLES = {
@@ -1611,6 +2173,7 @@
     }
 
     /* ============ checklist ============ */
+    /* 数据同步自飞书《阿稻的新西兰行程》→ 待购买物品 / 签证材料（2026-09-20 读取） */
     const CHECKLIST = [
       {
         name: '证件与保险', icon: 'badge-check', items: [
@@ -1644,16 +2207,18 @@
       },
       {
         name: '衣服（三层穿法）', icon: 'shirt', items: [
-          ['冲锋衣 ×2', '已下单', false],
+          ['冲锋衣 ×2', '已下单（在路上）', false],
           ['冲锋裤', '已购买', true],
           ['抓绒', '已购买', true],
           ['羽绒', '已购买', true],
-          ['羊毛速干衣', '待下单', false],
+          ['羊毛速干衣', '标记为不需要', false],
           ['手套', '已购买', true],
-          ['暖帽 ×2', '已下单', false],
+          ['暖帽 ×2', '已购买', true],
           ['鸭舌帽', '已购买', true],
-          ['防晒帽', '已购买', true],
-          ['防风墨镜 / 墨镜', '已购买', true]
+          ['遮阳帽', '已购买 · 10 月南岛紫外线仍强', true],
+          ['滑雪护脸', '已购买 · 09.30 卡德罗纳', true],
+          ['滑雪裤', '已购买 · 09.30 卡德罗纳', true],
+          ['护臀', '已购买 · 滑雪摔一天的保险', true]
         ]
       },
       {
@@ -1662,9 +2227,13 @@
           ['星空镜头', '已下单 · 蒂卡波要用', false],
           ['三脚架', '已购买 · 观星必备', true],
           ['电池（多备）', '已购买', true],
+          ['高速内存卡', '已购买', true],
           ['内存卡包', '已购买', true],
           ['Pocket 云台相机', '已购买', true],
+          ['Pocket 配件', '已购买', true],
           ['Action 运动相机', '已购买', true],
+          ['Action 6', '已下单（在路上）', false],
+          ['Action 电池', '已购买', true],
           ['Action 挂脖 / 自拍杆', '已购买', true],
           ['麦克风', '已购买', true],
           ['洗镜头（清洁套装）', '待下单', false]
@@ -1672,38 +2241,43 @@
       },
       {
         name: '坐飞机的随身包', icon: 'plane', items: [
-          ['U 型枕', '已下单', false],
+          ['U 型枕', '已购买', true],
           ['眼罩', '', false],
           ['耳塞', '', false],
           ['便携牙刷 + 牙膏', '', false],
           ['压缩洗脸巾', '', false],
           ['纸巾', '', false],
-          ['一次性拖鞋', '', false],
+          ['一次性拖鞋', '已购买', true],
           ['拖鞋', '', false],
           ['梅片', '缓解干燥与恶心', false],
           ['华夫饼（顶饱的零食）', '', false],
-          ['下载好电影', '', false],
+          ['下载好电影', '香港—悉尼 11 小时夜航', false],
           ['晕车贴', '标记为不需要', false]
         ]
       },
       {
         name: '生活用品', icon: 'backpack', items: [
-          ['转换插头', '新西兰 / 澳洲同为 I 型三扁插', false],
+          ['转换插头', '已购买 · 新西兰与澳洲同为 I 型三扁插', true],
           ['充电宝', '已购买', true],
           ['排插', '已购买', true],
           ['小水壶', '已购买', true],
           ['毛巾', '已购买', true],
           ['收纳袋', '已购买', true],
           ['雨伞', '已购买', true],
-          ['洗发露 / 洗面奶', '已购买', true],
+          ['洗发露', '已购买', true],
+          ['洗面奶', '已购买', true],
           ['剃须刀', '已购买', true],
-          ['口罩', '', false],
-          ['一次性内裤 / 袜子', '', false],
-          ['电话卡', '标记为不需要（用漫游或 eSIM）', false]
+          ['一次性内裤', '已购买', true],
+          ['一次性袜子', '', false],
+          ['防风墨镜 / 墨镜', '已购买 · 雪场与湖区反光强', true],
+          ['防晒帽', '已购买', true],
+          ['电话卡', '已购买', true],
+          ['口罩', '标记为不需要', false]
         ]
       },
       {
         name: '药品', icon: 'pill', items: [
+          ['晕船药', '已下单 · 10.04 凯库拉出海用', false],
           ['布洛芬', '止痛退烧', false],
           ['阿莫西林', '', false],
           ['诺氟沙星', '', false],
@@ -1711,13 +2285,12 @@
           ['整肠丸', '', false],
           ['开瑞坦', '过敏', false],
           ['牛黄（解毒片）', '', false],
-          ['维 C', '', false],
-          ['晕船药', '凯库拉两趟出海用', false]
+          ['维 C', '', false]
         ]
       }
     ];
 
-    const STORE_KEY = 'nz2026-checklist-v1';
+    const STORE_KEY = 'nz2026-checklist-v2';
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (e) { saved = {}; }
 
@@ -1761,6 +2334,217 @@
       refresh();
     }));
     refresh();
+
+
+    /* ============ 预习页内跳转（不污染 tab hash） ============ */
+    document.querySelectorAll('.prep-jump a[href^="#"]').forEach((a) => {
+      a.addEventListener('click', (ev) => {
+        const target = document.getElementById(a.getAttribute('href').slice(1));
+        if (!target) return;
+        ev.preventDefault();
+        const box = target.closest('.panel');
+        if (box) box.scrollTo({ top: Math.max(0, target.offsetTop - 18), behavior: 'smooth' });
+        else target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* ============ 行程天气 ============ */
+    (function weatherModule() {
+      const W = window.NZ_WEATHER;
+      const stripEl = document.getElementById('wxStrip');
+      const stateEl = document.getElementById('wxState');
+      const noteEl = document.getElementById('wxNote');
+      const alertsEl = document.getElementById('wxAlerts');
+      if (!W || !stripEl) return;
+
+      /* WMO weather code → 图标 + 中文描述 */
+      const CODES = {
+        0: ['sun', '晴'], 1: ['sun', '晴到少云'], 2: ['cloud-sun', '多云'], 3: ['cloud', '阴'],
+        45: ['cloud-fog', '雾'], 48: ['cloud-fog', '冻雾'],
+        51: ['cloud-drizzle', '小毛雨'], 53: ['cloud-drizzle', '毛雨'], 55: ['cloud-drizzle', '强毛雨'],
+        56: ['cloud-drizzle', '冻毛雨'], 57: ['cloud-drizzle', '强冻毛雨'],
+        61: ['cloud-rain', '小雨'], 63: ['cloud-rain', '中雨'], 65: ['cloud-rain-wind', '大雨'],
+        66: ['cloud-hail', '冻雨'], 67: ['cloud-hail', '强冻雨'],
+        71: ['cloud-snow', '小雪'], 73: ['cloud-snow', '中雪'], 75: ['snowflake', '大雪'], 77: ['snowflake', '雪粒'],
+        80: ['cloud-rain', '阵雨'], 81: ['cloud-rain', '强阵雨'], 82: ['cloud-rain-wind', '暴雨'],
+        85: ['cloud-snow', '阵雪'], 86: ['snowflake', '强阵雪'],
+        95: ['cloud-lightning', '雷雨'], 96: ['cloud-lightning', '雷雨伴冰雹'], 99: ['cloud-lightning', '强雷雨伴冰雹']
+      };
+      const codeInfo = (c) => CODES[c] || ['cloud-sun', '多变'];
+      const r0 = (v) => (v === null || v === undefined ? null : Math.round(v));
+      const has = (v) => v !== null && v !== undefined;
+
+      /* 优先用预报，缺数据时退回 2015–2025 同日历史平均 */
+      function pick(day) {
+        const fc = (W.forecast[day.loc] || {})[day.date];
+        if (fc && has(fc.tmax)) {
+          const info = codeInfo(fc.code);
+          return {
+            live: true, icon: info[0], sky: info[1],
+            tmax: r0(fc.tmax), tmin: r0(fc.tmin), pop: fc.pop,
+            prcp: fc.prcp, wind: r0(fc.wind), sunrise: fc.sunrise, sunset: fc.sunset
+          };
+        }
+        const cl = (W.climate[day.loc] || {})[day.date.slice(5)];
+        if (!cl) return null;
+        const wet = Math.round(cl.wet_rate * 100);
+        return {
+          live: false,
+          icon: cl.wet_rate >= 0.6 ? 'cloud-rain' : cl.wet_rate >= 0.35 ? 'cloud-sun' : 'sun',
+          sky: '过去 ' + cl.years + ' 年里 ' + wet + '% 的同一天在下雨' + (cl.snow_rate >= 0.2 ? '，' + Math.round(cl.snow_rate * 100) + '% 有降雪' : ''),
+          tmax: cl.tmax, tmin: cl.tmin, pop: null, prcp: cl.prcp, wind: r0(cl.wind),
+          hi: cl.tmax_hi, lo: cl.tmin_lo
+        };
+      }
+
+      /* 天气敏感的项目：出海、飞行、雪场、星空 */
+      const RISK = {
+        '0928': ['NZONE 跳伞 15,000ft', '大风或云底过低会延期，早上先看运营方通知，行程里已经留了备用时段。'],
+        '0929': ['格林诺奇冰川徒步', '雨雪影响直升机接驳和冰面状况，看前一天的降水更有参考价值。'],
+        '0930': ['卡德罗纳滑雪 + 喷射艇', '9 月底是季末，缆车与雪道按雪况开放，出发前查雪场当日公告。'],
+        '1002': ['库克山胡克步道', '谷风强，体感明显低于气温；吊桥段遇阵风要扶稳、收好帽子。'],
+        '1003': ['蒂卡波 Mt John 观星', '观星要的是「少云」不是「不下雨」，云量比降水概率更关键。'],
+        '1004': ['凯库拉出海观鲸', '风浪过大会取消并退款，出发前查运营方公告；上午小镇行程不受影响。']
+      };
+
+      function factRow(d) {
+        const out = [];
+        if (has(d.pop)) out.push('降水概率 <b>' + d.pop + '%</b>');
+        else if (has(d.prcp)) out.push('同期降水 <b>' + d.prcp + 'mm</b>');
+        if (has(d.wind)) out.push('风 <b>' + d.wind + '</b> km/h');
+        if (d.live && d.sunrise && d.sunset) out.push('日出 <b>' + d.sunrise + '</b> · 日落 <b>' + d.sunset + '</b>');
+        if (!d.live && has(d.hi)) out.push('历史区间 <b>' + d.lo + '° ~ ' + d.hi + '°</b>');
+        return out.map((x) => '<span>' + x + '</span>').join('');
+      }
+
+      function render() {
+        stripEl.innerHTML = W.days.map((day) => {
+          const d = pick(day);
+          const md = day.date.slice(5, 7) + '.' + day.date.slice(8, 10);
+          const locName = (W.locs[day.loc] || {}).name || '';
+          const altName = day.alt ? (W.locs[day.alt] || {}).name || '' : '';
+          const head = '<div class="wx-date"><b>' + md + '</b><span>' + day.dow + '</span></div>'
+            + '<div class="wx-place"><i data-lucide="map-pin"></i>' + locName + (altName ? '<span class="wx-alt">→ ' + altName + '</span>' : '') + '</div>';
+          if (!d) return '<article class="wx-card">' + head + '<div class="wx-sky">暂无数据</div></article>';
+          return '<article class="wx-card' + (d.live ? '' : ' is-climo') + (RISK[day.key] ? ' is-alert' : '') + '">'
+            + head
+            + '<div class="wx-main"><i data-lucide="' + d.icon + '"></i><span class="wx-temp">' + d.tmax + '°<em> / ' + d.tmin + '°</em></span></div>'
+            + '<div class="wx-sky">' + d.sky + '</div>'
+            + '<div class="wx-facts">' + factRow(d) + '</div>'
+            + '<span class="wx-tag">' + (d.live ? '逐日预报' : '历史同期') + '</span>'
+            + '</article>';
+        }).join('');
+
+        alertsEl.innerHTML = W.days.filter((day) => RISK[day.key]).map((day) => {
+          const d = pick(day);
+          const r = RISK[day.key];
+          const now = d
+            ? d.tmax + '° / ' + d.tmin + '°，' + d.sky + (has(d.wind) ? '，最大风速 ' + d.wind + ' km/h' : '') + (d.live ? '' : '（历史同期）')
+            : '暂无数据';
+          return '<div class="wx-alert"><i data-lucide="triangle-alert"></i><div><b>' + day.date.slice(5).replace('-', '.') + ' ' + r[0] + '</b>'
+            + '<span>' + r[1] + '<br>当前口径：' + now + '</span></div></div>';
+        }).join('');
+
+        /* 每日行程的日期列挂一个小天气 */
+        const byMd = {};
+        W.days.forEach((day) => { byMd[day.date.slice(5, 7) + '.' + day.date.slice(8, 10)] = day; });
+        document.querySelectorAll('.story-date').forEach((el) => {
+          const old = el.querySelector('.day-weather');
+          if (old) old.remove();
+          const strong = el.querySelector('strong');
+          const day = byMd[strong ? strong.textContent.trim() : ''];
+          if (!day) return;
+          const d = pick(day);
+          if (!d) return;
+          const chip = document.createElement('span');
+          chip.className = 'day-weather' + (d.live ? '' : ' is-climo');
+          chip.title = (W.locs[day.loc] || {}).name + '：' + d.sky + (d.live ? '（预报）' : '（2015–2025 同期平均）');
+          chip.innerHTML = '<i data-lucide="' + d.icon + '"></i><b>' + d.tmax + '°</b>/' + d.tmin + '°';
+          el.appendChild(chip);
+        });
+
+        /* 顶部日期导航也带上气温 */
+        document.querySelectorAll('.day-chip').forEach((chip) => {
+          const b = chip.querySelector('b');
+          const day = byMd[b ? b.textContent.trim() : ''];
+          const old = chip.querySelector('.chip-wx');
+          if (old) old.remove();
+          if (!day) return;
+          const d = pick(day);
+          if (!d) return;
+          const em = document.createElement('em');
+          em.className = 'chip-wx';
+          em.textContent = d.tmax + '° / ' + d.tmin + '°';
+          chip.appendChild(em);
+        });
+
+        noteEl.innerHTML = '口径：<b>逐日预报</b>来自 Open-Meteo（ECMWF 模式），页面每次打开会联网刷新；'
+          + '<b>历史同期</b>是 2015–2025 年同一日期的实测平均（ERA5 归档），用于公开预报还覆盖不到的日期。'
+          + '气温为当日最高/最低，风速为 10m 最大风速，降水为 24 小时累计。快照时间 '
+          + new Date(W.generated).toLocaleString('zh-CN', { hour12: false }) + '。';
+
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      function setState(cls, icon, text) {
+        stateEl.className = 'wx-state' + (cls ? ' ' + cls : '');
+        stateEl.innerHTML = '<i data-lucide="' + icon + '"></i>' + text;
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      render();
+
+      /* 联网刷新预报 */
+      const keys = Object.keys(W.locs);
+      const url = 'https://api.open-meteo.com/v1/forecast'
+        + '?latitude=' + keys.map((k) => W.locs[k].lat).join(',')
+        + '&longitude=' + keys.map((k) => W.locs[k].lon).join(',')
+        + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset'
+        + '&timezone=auto&forecast_days=16';
+
+      setState('', 'loader', '已显示快照，正在联网刷新…');
+      const slow = setTimeout(() => setState('', 'cloud-off', '联网较慢，当前显示打包快照'), 4000);
+      fetch(url, { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error('HTTP ' + res.status))))
+        .then((data) => {
+          const blocks = Array.isArray(data) ? data : [data];
+          const wanted = {};
+          W.days.forEach((d) => { wanted[d.date] = true; });
+          let hit = 0;
+          keys.forEach((k, i) => {
+            const daily = blocks[i] && blocks[i].daily;
+            if (!daily || !daily.time) return;
+            const next = {};
+            daily.time.forEach((t, j) => {
+              if (!wanted[t]) return;
+              next[t] = {
+                code: daily.weather_code[j],
+                tmax: daily.temperature_2m_max[j],
+                tmin: daily.temperature_2m_min[j],
+                prcp: daily.precipitation_sum[j],
+                pop: daily.precipitation_probability_max[j],
+                wind: daily.wind_speed_10m_max[j],
+                sunrise: (daily.sunrise[j] || '').slice(11, 16),
+                sunset: (daily.sunset[j] || '').slice(11, 16)
+              };
+              hit += 1;
+            });
+            W.forecast[k] = Object.assign({}, W.forecast[k], next);
+          });
+          clearTimeout(slow);
+          if (!hit) {
+            setState('is-offline', 'wifi-off', '预报还没覆盖到行程日期，显示历史同期');
+            return;
+          }
+          W.generated = new Date().toISOString();
+          render();
+          setState('is-live', 'wifi', '已刷新到最新预报 · ' + new Date().toLocaleString('zh-CN', { hour12: false, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }));
+        })
+        .catch(() => {
+          clearTimeout(slow);
+          setState('is-offline', 'wifi-off', '联网刷新失败，显示打包时的预报快照');
+        });
+    })();
 
     if (window.lucide) window.lucide.createIcons();
   </script>
